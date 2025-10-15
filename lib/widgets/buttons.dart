@@ -1,509 +1,246 @@
 import 'package:flutter/material.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 
-// BUTTON DENGAN BACKGROUND
+/// ukuran button
+enum ButtonSize {
+  extraLarge(56),
+  large(52),
+  medium(44),
+  small(36),
+  extraSmall(28);
 
-class PrimaryExtraLargeLabelButton extends StatelessWidget {
-  // OOP
-  final String title;
   final double height;
+  const ButtonSize(this.height);
+}
+
+/// style button
+enum ButtonVariant {
+  primary,
+  outlined,
+  text,
+  disabled,
+  primaryIcon,
+  outlinedIcon,
+}
+
+/// custom beberapa varian dan ukuran
+class CustomButton extends StatelessWidget {
+  final String title;
+  final ButtonSize size;
+  final ButtonVariant variant;
   final double width;
   final VoidCallback? onPressed;
 
-  const PrimaryExtraLargeLabelButton({
+  const CustomButton({
     super.key,
     required this.title,
     required this.width,
-    // this.width = double.infinity,
-    this.height = 56,
+    this.size = ButtonSize.large,
+    this.variant = ButtonVariant.primary,
     this.onPressed,
   });
 
+  // factory constructors untuk kemudahan penggunaan
+  factory CustomButton.primary({
+    required String title,
+    required double width,
+    ButtonSize size = ButtonSize.large,
+    VoidCallback? onPressed,
+  }) {
+    return CustomButton(
+      title: title,
+      width: width,
+      size: size,
+      variant: ButtonVariant.primary,
+      onPressed: onPressed,
+    );
+  }
+
+  factory CustomButton.outlined({
+    required String title,
+    required double width,
+    ButtonSize size = ButtonSize.large,
+    VoidCallback? onPressed,
+  }) {
+    return CustomButton(
+      title: title,
+      width: width,
+      size: size,
+      variant: ButtonVariant.outlined,
+      onPressed: onPressed,
+    );
+  }
+
+  factory CustomButton.text({
+    required String title,
+    required double width,
+    ButtonSize size = ButtonSize.large,
+    VoidCallback? onPressed,
+  }) {
+    return CustomButton(
+      title: title,
+      width: width,
+      size: size,
+      variant: ButtonVariant.text,
+      onPressed: onPressed,
+    );
+  }
+
+  factory CustomButton.disabled({
+    required String title,
+    required double width,
+    ButtonSize size = ButtonSize.large,
+    VoidCallback? onPressed,
+  }) {
+    return CustomButton(
+      title: title,
+      width: width,
+      size: size,
+      variant: ButtonVariant.disabled,
+      onPressed: onPressed,
+    );
+  }
+
+  factory CustomButton.primaryIcon({
+    required String title,
+    required double width,
+    ButtonSize size = ButtonSize.large,
+    VoidCallback? onPressed,
+  }) {
+    return CustomButton(
+      title: title,
+      width: width,
+      size: size,
+      variant: ButtonVariant.primaryIcon,
+      onPressed: onPressed,
+    );
+  }
+
+  factory CustomButton.outlinedIcon({
+    required String title,
+    required double width,
+    ButtonSize size = ButtonSize.large,
+    VoidCallback? onPressed,
+  }) {
+    return CustomButton(
+      title: title,
+      width: width,
+      size: size,
+      variant: ButtonVariant.outlinedIcon,
+      onPressed: onPressed,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: TextButton(
-        onPressed: onPressed,
-        style: TextButton.styleFrom(
-          backgroundColor: darkBlueAccent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(32),
-          ),
-        ),
-        child: Text(
-          title,
-          style: whiteTextStyle.copyWith(fontSize: 16, fontWeight: medium),
-        ),
+    return SizedBox(width: width, height: size.height, child: _buildButton());
+  }
+
+  Widget _buildButton() {
+    switch (variant) {
+      case ButtonVariant.primary:
+        return _buildPrimaryButton();
+      case ButtonVariant.outlined:
+        return _buildOutlinedButton();
+      case ButtonVariant.text:
+        return _buildTextButton();
+      case ButtonVariant.disabled:
+        return _buildDisabledButton();
+      case ButtonVariant.primaryIcon:
+        return _buildPrimaryIconButton();
+      case ButtonVariant.outlinedIcon:
+        return _buildOutlinedIconButton();
+    }
+  }
+
+  Widget _buildPrimaryButton() {
+    return TextButton(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        backgroundColor: darkBlueAccent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+      ),
+      child: Text(
+        title,
+        style: whiteTextStyle.copyWith(fontSize: 16, fontWeight: medium),
       ),
     );
   }
-}
 
-class PrimaryLargeLabelButton extends StatelessWidget {
-  // OOP
-  final String title;
-  final double height;
-  final double width;
-  final VoidCallback? onPressed;
-
-  const PrimaryLargeLabelButton({
-    super.key,
-    required this.title,
-    required this.width,
-    // this.width = double.infinity,
-    this.height = 52,
-    this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: TextButton(
-        onPressed: onPressed,
-        style: TextButton.styleFrom(
-          backgroundColor: darkBlueAccent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(32),
-          ),
-        ),
-        child: Text(
-          title,
-          style: whiteTextStyle.copyWith(fontSize: 16, fontWeight: medium),
-        ),
+  Widget _buildOutlinedButton() {
+    return OutlinedButton(
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+        side: BorderSide(color: darkBlueAccent, width: 1.5),
+      ),
+      child: Text(
+        title,
+        style: darkBlueTextStyle.copyWith(fontSize: 16, fontWeight: medium),
       ),
     );
   }
-}
 
-class PrimarySmallLabelButton extends StatelessWidget {
-  // OOP
-  final String title;
-  final double height;
-  final double width;
-  final VoidCallback? onPressed;
+  Widget _buildTextButton() {
+    return TextButton(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(padding: EdgeInsets.zero),
+      child: Text(title, style: darkBlueTextStyle.copyWith(fontSize: 16)),
+    );
+  }
 
-  const PrimarySmallLabelButton({
-    super.key,
-    required this.title,
-    required this.width,
-    // this.width = double.infinity,
-    this.height = 36,
-    this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: TextButton(
-        onPressed: onPressed,
-        style: TextButton.styleFrom(
-          backgroundColor: darkBlueAccent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(32),
-          ),
-        ),
-        child: Text(
-          title,
-          style: whiteTextStyle.copyWith(fontSize: 16, fontWeight: medium),
-        ),
+  Widget _buildDisabledButton() {
+    return TextButton(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        backgroundColor: darkGreyColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+      ),
+      child: Text(
+        title,
+        style: greyTextStyle.copyWith(fontSize: 16, fontWeight: medium),
       ),
     );
   }
-}
 
-class PrimaryExtraSmallLabelButton extends StatelessWidget {
-  // OOP
-  final String title;
-  final double height;
-  final double width;
-  final VoidCallback? onPressed;
-
-  const PrimaryExtraSmallLabelButton({
-    super.key,
-    required this.title,
-    required this.width,
-    // this.width = double.infinity,
-    this.height = 28,
-    this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: TextButton(
-        onPressed: onPressed,
-        style: TextButton.styleFrom(
-          backgroundColor: darkBlueAccent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(32),
+  Widget _buildPrimaryIconButton() {
+    return TextButton(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        backgroundColor: darkBlueAccent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.play_arrow, color: whiteColor,),
+          SizedBox(width: 8),
+          Text(
+            title,
+            style: whiteTextStyle.copyWith(fontSize: 16, fontWeight: medium),
           ),
-        ),
-        child: Text(
-          title,
-          style: whiteTextStyle.copyWith(fontSize: 16, fontWeight: medium),
-        ),
+        ],
       ),
     );
   }
-}
 
-// BUTTON DENGAN STROKE
-
-class DefaultExtraLargeLabelButton extends StatelessWidget {
-  final String title;
-  final double height;
-  final double width;
-  final VoidCallback? onPressed;
-
-  const DefaultExtraLargeLabelButton({
-    super.key,
-    required this.title,
-    // this.width = double.infinity,
-    required this.width,
-    this.height = 56,
-    this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: OutlinedButton(
-        style: OutlinedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(32),
-          ),
-          side: BorderSide(
-            color: darkBlueAccent,
-            width: 1.5,
-            style: BorderStyle.solid,
-          ),
-        ),
-        onPressed: () {},
-        child: Text(
-          title,
-          style: darkBlueTextStyle.copyWith(fontSize: 16, fontWeight: medium),
-        ),
+  Widget _buildOutlinedIconButton() {
+    return OutlinedButton(
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+        side: BorderSide(color: darkBlueAccent, width: 1.5),
       ),
-    );
-  }
-}
-
-class DefaultLargeLabelButton extends StatelessWidget {
-  final String title;
-  final double height;
-  final double width;
-  final VoidCallback? onPressed;
-
-  const DefaultLargeLabelButton({
-    super.key,
-    required this.title,
-    // this.width = double.infinity,
-    required this.width,
-    this.height = 52,
-    this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: OutlinedButton(
-        style: OutlinedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(32),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.play_arrow, color: darkBlueAccent,),
+          SizedBox(width: 8),
+          Text(
+            title,
+            style: darkBlueTextStyle.copyWith(fontSize: 16, fontWeight: medium),
           ),
-          side: BorderSide(
-            color: darkBlueAccent,
-            width: 1.5,
-            style: BorderStyle.solid,
-          ),
-        ),
-        onPressed: () {},
-        child: Text(
-          title,
-          style: darkBlueTextStyle.copyWith(fontSize: 16, fontWeight: medium),
-        ),
-      ),
-    );
-  }
-}
-
-class DefaultMediumLabelButton extends StatelessWidget {
-  final String title;
-  final double height;
-  final double width;
-  final VoidCallback? onPressed;
-
-  const DefaultMediumLabelButton({
-    super.key,
-    required this.title,
-    // this.width = double.infinity,
-    required this.width,
-    this.height = 44,
-    this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: OutlinedButton(
-        style: OutlinedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(32),
-          ),
-          side: BorderSide(
-            color: darkBlueAccent,
-            width: 1.5,
-            style: BorderStyle.solid,
-          ),
-        ),
-        onPressed: () {},
-        child: Text(
-          title,
-          style: darkBlueTextStyle.copyWith(fontSize: 16, fontWeight: medium),
-        ),
-      ),
-    );
-  }
-}
-
-class DefaultSmallLabelButton extends StatelessWidget {
-  final String title;
-  final double height;
-  final double width;
-  final VoidCallback? onPressed;
-
-  const DefaultSmallLabelButton({
-    super.key,
-    required this.title,
-    // this.width = double.infinity,
-    required this.width,
-    this.height = 36,
-    this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: OutlinedButton(
-        style: OutlinedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(32),
-          ),
-          side: BorderSide(
-            color: darkBlueAccent,
-            width: 1.5,
-            style: BorderStyle.solid,
-          ),
-        ),
-        onPressed: () {},
-        child: Text(
-          title,
-          style: darkBlueTextStyle.copyWith(fontSize: 16, fontWeight: medium),
-        ),
-      ),
-    );
-  }
-}
-
-class DefaultExtraSmallLabelButton extends StatelessWidget {
-  final String title;
-  final double height;
-  final double width;
-  final VoidCallback? onPressed;
-
-  const DefaultExtraSmallLabelButton({
-    super.key,
-    required this.title,
-    // this.width = double.infinity,
-    required this.width,
-    this.height = 28,
-    this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: OutlinedButton(
-        style: OutlinedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(32),
-          ),
-          side: BorderSide(
-            color: darkBlueAccent,
-            width: 1.5,
-            style: BorderStyle.solid,
-          ),
-        ),
-        onPressed: () {},
-        child: Text(
-          title,
-          style: darkBlueTextStyle.copyWith(fontSize: 16, fontWeight: medium),
-        ),
-      ),
-    );
-  }
-}
-
-// BUTTON TANPA BACKGROUND
-
-class TextExtraLargeLabelButton extends StatelessWidget {
-  final String title;
-  final double height;
-  final double width;
-  final VoidCallback? onPressed;
-
-  const TextExtraLargeLabelButton({
-    super.key,
-    required this.title,
-    // this.width = double.infinity,
-    required this.width,
-    this.height = 56,
-    this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: TextButton(
-        onPressed: onPressed,
-        style: TextButton.styleFrom(padding: EdgeInsets.zero),
-        child: Text(title, style: greyTextStyle.copyWith(fontSize: 16)),
-      ),
-    );
-  }
-}
-
-class TextLargeLabelButton extends StatelessWidget {
-  final String title;
-  final double height;
-  final double width;
-  final VoidCallback? onPressed;
-
-  const TextLargeLabelButton({
-    super.key,
-    required this.title,
-    // this.width = double.infinity,
-    required this.width,
-    this.height = 52,
-    this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: TextButton(
-        onPressed: onPressed,
-        style: TextButton.styleFrom(padding: EdgeInsets.zero),
-        child: Text(title, style: greyTextStyle.copyWith(fontSize: 16)),
-      ),
-    );
-  }
-}
-
-class TextMediumLabelButton extends StatelessWidget {
-  final String title;
-  final double height;
-  final double width;
-  final VoidCallback? onPressed;
-
-  const TextMediumLabelButton({
-    super.key,
-    required this.title,
-    // this.width = double.infinity,
-    required this.width,
-    this.height = 44,
-    this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: TextButton(
-        onPressed: onPressed,
-        style: TextButton.styleFrom(padding: EdgeInsets.zero),
-        child: Text(title, style: greyTextStyle.copyWith(fontSize: 16)),
-      ),
-    );
-  }
-}
-
-class TextSmallLabelButton extends StatelessWidget {
-  final String title;
-  final double height;
-  final double width;
-  final VoidCallback? onPressed;
-
-  const TextSmallLabelButton({
-    super.key,
-    required this.title,
-    // this.width = double.infinity,
-    required this.width,
-    this.height = 36,
-    this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: TextButton(
-        onPressed: onPressed,
-        style: TextButton.styleFrom(padding: EdgeInsets.zero),
-        child: Text(title, style: greyTextStyle.copyWith(fontSize: 16)),
-      ),
-    );
-  }
-}
-
-class TextExtraSmallLabelButton extends StatelessWidget {
-  final String title;
-  final double height;
-  final double width;
-  final VoidCallback? onPressed;
-
-  const TextExtraSmallLabelButton({
-    super.key,
-    required this.title,
-    // this.width = double.infinity,
-    required this.width,
-    this.height = 28,
-    this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: TextButton(
-        onPressed: onPressed,
-        style: TextButton.styleFrom(padding: EdgeInsets.zero),
-        child: Text(title, style: greyTextStyle.copyWith(fontSize: 16)),
+        ],
       ),
     );
   }
