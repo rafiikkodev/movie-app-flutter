@@ -1,16 +1,14 @@
-# template_project_flutter
-
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# Dokumentasi Folder
+- bindings/ = sambung controller <-> view via Get.put() otomatis
+- controllers/ = controller global (misal theme controller, auth controller)
+- core/config/ = .env, API key, base URL, constant value
+- core/theme/ = warna, typography, style global
+- core/utils/ = helper fungsi(format date, log)
+- data/models/ = kelas model dari response API(MovieModel, GenreModel)
+- data/providers/ = API call logic(pake Dio/http)
+- data/repositories/ = abstraksi untuk ambil data dari API/lokal/cache
+- domain/ = opsional
+- modules/ = featured based folder(home, movie, search, detail)
+- routes/ = semua navigasi(GetPage routes)
+- services/ = Hive, SharedPreferences
+- widgets/ = komponen global UI reusable
