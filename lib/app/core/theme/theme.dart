@@ -28,6 +28,7 @@ TextStyle whiteTextStyle = GoogleFonts.poppins(color: whiteColor);
 TextStyle greyTextStyle = GoogleFonts.poppins(color: greyColor);
 TextStyle darkBlueTextStyle = GoogleFonts.poppins(color: darkBlueAccent);
 TextStyle redTextStyle = GoogleFonts.poppins(color: redColor);
+TextStyle orangeTextStyle = GoogleFonts.poppins(color: orangeColor);
 
 // inisialisasi ketebalan text
 FontWeight light = FontWeight.w300;
