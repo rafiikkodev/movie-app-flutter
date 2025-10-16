@@ -10,12 +10,12 @@ class CustomRate extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      width: 70,
       decoration: BoxDecoration(
-        color: darkColor,
+        color: darkColor.withAlpha(30),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.star_rate_rounded, color: orangeColor),
