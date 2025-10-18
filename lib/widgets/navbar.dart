@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 
 /// Custom Bottom Navigation Bar with nested navigation and fade transitions
@@ -93,18 +94,14 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
   }
 
   Widget _buildNavigationBar() {
-    return Container(
-      decoration: BoxDecoration(color: Colors.transparent),
-      child: SafeArea(
-        child: Container(
-          height: 100,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(
-              widget.items.length,
-              (index) => _buildNavItem(index),
-            ),
+    return SafeArea(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: List.generate(
+            widget.items.length,
+            (index) => _buildNavItem(index),
           ),
         ),
       ),
@@ -127,16 +124,12 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(16),
           ),
-          child: Row(
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(
-                isSelected ? item.selectedIcon : item.icon,
-                color: isSelected ? darkBlueAccent : greyColor,
-                size: 24,
-              ),
+              _buildIcon(item, isSelected),
               const SizedBox(width: 6),
               Flexible(
                 child: Text(
@@ -155,6 +148,30 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
         ),
       ),
     );
+  }
+
+  Widget _buildIcon(NavItem item, bool isSelected) {
+    final iconPath = isSelected ? item.selectedIcon : item.icon;
+
+    // Check if it's SVG or regular image
+    if (iconPath.endsWith('.svg')) {
+      return SvgPicture.asset(
+        iconPath,
+        width: 24,
+        height: 24,
+        colorFilter: ColorFilter.mode(
+          isSelected ? darkBlueAccent : greyColor,
+          BlendMode.srcIn,
+        ),
+      );
+    } else {
+      return Image.asset(
+        iconPath,
+        width: 24,
+        height: 24,
+        color: isSelected ? darkBlueAccent : greyColor,
+      );
+    }
   }
 
   List<Widget> _buildNavigationStack() {
@@ -189,8 +206,8 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
 
 /// Navigation Item Model
 class NavItem {
-  final IconData icon;
-  final IconData selectedIcon;
+  final String icon;
+  final String selectedIcon;
   final String label;
 
   const NavItem({
@@ -217,3 +234,35 @@ class _TabNavigator extends StatelessWidget {
     );
   }
 }
+
+// Usage
+// CustomNavigationBar(
+//       items: const [
+//         NavItem(
+//           icon: Icons.home_outlined,
+//           selectedIcon: Icons.home_rounded,
+//           label: 'Home',
+//         ),
+//         NavItem(
+//           icon: Icons.calendar_today_outlined,
+//           selectedIcon: Icons.calendar_month_rounded,
+//           label: 'Schedule',
+//         ),
+//         NavItem(
+//           icon: Icons.bar_chart_outlined,
+//           selectedIcon: Icons.bar_chart_rounded,
+//           label: 'Report',
+//         ),
+//         NavItem(
+//           icon: Icons.person_outline,
+//           selectedIcon: Icons.person,
+//           label: 'Profile',
+//         ),
+//       ],
+//       pages: const [
+//         HomePage(),
+//         SchedulePage(),
+//         ReportPage(),
+//         ProfilePage(),
+//       ],
+//     );

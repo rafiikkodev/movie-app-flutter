@@ -15,15 +15,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
   CarouselSliderController carouselController = CarouselSliderController();
 
   List<String> titles = [
-    "Ayo kembangin uangmu\ndari sekarang",
-    "Mulai dari nol sampai\nbebas finansial",
-    "Gas bareng bareng aja",
+    "The biggest international and local film streaming",
+    "Offers ad-free viewing of high quality",
+    "Our service brings together your favorite series",
   ];
 
   List<String> subtitles = [
-    "Sistem kita siap bantuin\ncapai targetmu",
-    "Ada tips biar kamu\ncepet nyesuain",
-    "Santai, kita temenin sampai tujuanmu",
+    "Semper in cursus magna et eu varius nunc adipiscing. Elementum justo, laoreet id sem semper parturient. ",
+    "Semper in cursus magna et eu varius nunc adipiscing. Elementum justo, laoreet id sem semper parturient. ",
+    "Semper in cursus magna et eu varius nunc adipiscing. Elementum justo, laoreet id sem semper parturient. ",
   ];
 
   @override
@@ -86,7 +86,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               title: "Get Started",
                               width: double.infinity,
                               onPressed: () {
-                                // Navigate to next page
+                                Navigator.pushNamed(context, "/home");
                               },
                             ),
                             const SizedBox(height: 20),
