@@ -61,7 +61,12 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/
+    # Images
+    - assets/images/
+
+    # Icons
+    - assets/icons-blue-accent/
+    - assets/icons-white/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
