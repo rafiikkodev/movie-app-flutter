@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
+import 'package:template_project_flutter/widgets/home_card.dart';
 import 'package:template_project_flutter/widgets/home_carousel.dart';
 import 'package:template_project_flutter/widgets/inputs.dart';
 import 'package:template_project_flutter/widgets/toggle_buttons.dart';
@@ -144,19 +145,41 @@ class _HomePageState extends State<HomePage> {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
-              Image.asset("assets/images/Card.png"),
+              HomeCard(
+                imageUrl: "assets/images/card.png",
+                title: "Spider-Man No Way Home",
+                subTitle: 'Action',
+              ),
               SizedBox(width: 12),
-              Image.asset("assets/images/Card-1.png"),
+              HomeCard(
+                imageUrl: "assets/images/card1.png",
+                title: "Spider-Man No Way Home",
+                subTitle: 'Action',
+              ),
               SizedBox(width: 12),
-              Image.asset("assets/images/Card-2.png"),
+              HomeCard(
+                imageUrl: "assets/images/card2.png",
+                title: "Spider-Man No Way Home",
+                subTitle: 'Action',
+              ),
               SizedBox(width: 12),
-              Image.asset("assets/images/Card-1.png"),
+              HomeCard(
+                imageUrl: "assets/images/card.png",
+                title: "Spider-Man No Way Home",
+                subTitle: 'Action',
+              ),
               SizedBox(width: 12),
-              Image.asset("assets/images/Card-2.png"),
+              HomeCard(
+                imageUrl: "assets/images/card1.png",
+                title: "Spider-Man No Way Home",
+                subTitle: 'Action',
+              ),
               SizedBox(width: 12),
-              Image.asset("assets/images/Card-1.png"),
-              SizedBox(width: 12),
-              Image.asset("assets/images/Card-2.png"),
+              HomeCard(
+                imageUrl: "assets/images/card2.png",
+                title: "Spider-Man No Way Home",
+                subTitle: 'Action',
+              ),
             ],
           ),
         ),
