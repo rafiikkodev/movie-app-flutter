@@ -11,7 +11,7 @@ class CustomRate extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: darkColor.withAlpha(30),
+        color: softColor.withAlpha(100),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
