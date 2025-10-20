@@ -29,6 +29,7 @@ class CustomButton extends StatelessWidget {
   final ButtonSize size;
   final ButtonVariant variant;
   final double width;
+  final double fontSize;
   final VoidCallback? onPressed;
 
   const CustomButton({
@@ -37,6 +38,7 @@ class CustomButton extends StatelessWidget {
     required this.width,
     this.size = ButtonSize.large,
     this.variant = ButtonVariant.primary,
+    this.fontSize = 16,
     this.onPressed,
   });
 
@@ -45,12 +47,14 @@ class CustomButton extends StatelessWidget {
     required String title,
     required double width,
     ButtonSize size = ButtonSize.large,
+    double fontSize = 16,
     VoidCallback? onPressed,
   }) {
     return CustomButton(
       title: title,
       width: width,
       size: size,
+      fontSize: fontSize,
       variant: ButtonVariant.primary,
       onPressed: onPressed,
     );
@@ -60,12 +64,14 @@ class CustomButton extends StatelessWidget {
     required String title,
     required double width,
     ButtonSize size = ButtonSize.large,
+    double fontSize = 16,
     VoidCallback? onPressed,
   }) {
     return CustomButton(
       title: title,
       width: width,
       size: size,
+      fontSize: fontSize,
       variant: ButtonVariant.outlined,
       onPressed: onPressed,
     );
@@ -75,12 +81,14 @@ class CustomButton extends StatelessWidget {
     required String title,
     required double width,
     ButtonSize size = ButtonSize.large,
+    double fontSize = 16,
     VoidCallback? onPressed,
   }) {
     return CustomButton(
       title: title,
       width: width,
       size: size,
+      fontSize: fontSize,
       variant: ButtonVariant.text,
       onPressed: onPressed,
     );
@@ -90,12 +98,14 @@ class CustomButton extends StatelessWidget {
     required String title,
     required double width,
     ButtonSize size = ButtonSize.large,
+    double fontSize = 16,
     VoidCallback? onPressed,
   }) {
     return CustomButton(
       title: title,
       width: width,
       size: size,
+      fontSize: fontSize,
       variant: ButtonVariant.disabled,
       onPressed: onPressed,
     );
@@ -105,12 +115,14 @@ class CustomButton extends StatelessWidget {
     required String title,
     required double width,
     ButtonSize size = ButtonSize.large,
+    double fontSize = 16,
     VoidCallback? onPressed,
   }) {
     return CustomButton(
       title: title,
       width: width,
       size: size,
+      fontSize: fontSize,
       variant: ButtonVariant.primaryIcon,
       onPressed: onPressed,
     );
@@ -120,12 +132,14 @@ class CustomButton extends StatelessWidget {
     required String title,
     required double width,
     ButtonSize size = ButtonSize.large,
+    double fontSize = 16,
     VoidCallback? onPressed,
   }) {
     return CustomButton(
       title: title,
       width: width,
       size: size,
+      fontSize: fontSize,
       variant: ButtonVariant.outlinedIcon,
       onPressed: onPressed,
     );
@@ -162,7 +176,7 @@ class CustomButton extends StatelessWidget {
       ),
       child: Text(
         title,
-        style: whiteTextStyle.copyWith(fontSize: 16, fontWeight: medium),
+        style: whiteTextStyle.copyWith(fontSize: fontSize, fontWeight: medium),
       ),
     );
   }
@@ -176,7 +190,10 @@ class CustomButton extends StatelessWidget {
       ),
       child: Text(
         title,
-        style: darkBlueTextStyle.copyWith(fontSize: 16, fontWeight: medium),
+        style: darkBlueTextStyle.copyWith(
+          fontSize: fontSize,
+          fontWeight: medium,
+        ),
       ),
     );
   }
@@ -185,7 +202,7 @@ class CustomButton extends StatelessWidget {
     return TextButton(
       onPressed: onPressed,
       style: TextButton.styleFrom(padding: EdgeInsets.zero),
-      child: Text(title, style: darkBlueTextStyle.copyWith(fontSize: 16)),
+      child: Text(title, style: darkBlueTextStyle.copyWith(fontSize: fontSize)),
     );
   }
 
@@ -198,7 +215,7 @@ class CustomButton extends StatelessWidget {
       ),
       child: Text(
         title,
-        style: greyTextStyle.copyWith(fontSize: 16, fontWeight: medium),
+        style: greyTextStyle.copyWith(fontSize: fontSize, fontWeight: medium),
       ),
     );
   }
@@ -213,11 +230,14 @@ class CustomButton extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.play_arrow, color: whiteColor,),
-          SizedBox(width: 8),
+          Icon(Icons.play_arrow, color: whiteColor, size: fontSize + 4),
+          const SizedBox(width: 8),
           Text(
             title,
-            style: whiteTextStyle.copyWith(fontSize: 16, fontWeight: medium),
+            style: whiteTextStyle.copyWith(
+              fontSize: fontSize,
+              fontWeight: medium,
+            ),
           ),
         ],
       ),
@@ -234,11 +254,14 @@ class CustomButton extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.play_arrow, color: darkBlueAccent,),
-          SizedBox(width: 8),
+          Icon(Icons.play_arrow, color: darkBlueAccent, size: fontSize + 4),
+          const SizedBox(width: 8),
           Text(
             title,
-            style: darkBlueTextStyle.copyWith(fontSize: 16, fontWeight: medium),
+            style: darkBlueTextStyle.copyWith(
+              fontSize: fontSize,
+              fontWeight: medium,
+            ),
           ),
         ],
       ),

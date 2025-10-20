@@ -78,3 +78,44 @@ class HomeCard extends StatelessWidget {
     );
   }
 }
+
+class SearchCard extends StatelessWidget {
+  final String imageUrl;
+  final String rate;
+
+  const SearchCard({super.key, required this.imageUrl, required this.rate});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 112,
+      height: 147,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: softColor,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadiusDirectional.vertical(
+              top: Radius.circular(12),
+            ),
+            child: SizedBox(
+              width: 135,
+              height: 147,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: Image.asset(imageUrl, fit: BoxFit.cover),
+                  ),
+                  Positioned(top: 8, left: 8, child: CustomRate(number: rate)),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

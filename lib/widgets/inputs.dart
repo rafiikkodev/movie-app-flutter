@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 
 class SearchBarInput extends StatelessWidget {
-  // OOP
   final String title;
   final double height;
   final double width;
+  final bool showFilterIcon;
   final VoidCallback? onPressed;
 
   const SearchBarInput({
     super.key,
     required this.title,
     required this.width,
-    // this.width = double.infinity,
     this.height = 40,
+    this.showFilterIcon = true,
     this.onPressed,
   });
 
@@ -29,14 +29,15 @@ class SearchBarInput extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(56),
           ),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
-                Icon(Icons.search, color: greyColor),
-                SizedBox(width: 8),
+                Icon(Icons.search, color: greyColor, size: 20),
+                const SizedBox(width: 8),
                 Text(
                   title,
                   style: greyTextStyle.copyWith(
@@ -46,17 +47,22 @@ class SearchBarInput extends StatelessWidget {
                 ),
               ],
             ),
-            Row(
-              children: [
-                VerticalDivider(
-                  color: greyColor,
-                  thickness: 1,
-                  indent: 8,
-                  endIndent: 8,
-                ),
-                Icon(Icons.filter_list, color: whiteColor),
-              ],
-            ),
+            if (showFilterIcon) ...[
+              Row(
+                children: [
+                  VerticalDivider(
+                    color: greyColor,
+                    thickness: 1,
+                    indent: 8,
+                    endIndent: 8,
+                  ),
+                  const SizedBox(width: 12),
+                  GestureDetector(
+                    child: Icon(Icons.filter_list, color: whiteColor, size: 24),
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),

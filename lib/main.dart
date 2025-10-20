@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/pages/onboarding_page.dart';
 import 'package:template_project_flutter/app/pages/home_page.dart';
+import 'package:template_project_flutter/app/pages/search_page.dart';
 import 'package:template_project_flutter/widgets/navbar.dart';
 
 void main() => runApp(const MyApp());
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
       routes: {
         "/": (context) => const OnboardingPage(),
         "/home": (context) => const MainNavigation(),
+        "/search": (context) => const SearchPage(),
       },
     );
   }
@@ -64,23 +66,6 @@ class MainNavigation extends StatelessWidget {
         ),
       ],
       pages: const [HomePage(), SearchPage(), FavoritesPage(), ProfilePage()],
-    );
-  }
-}
-
-class SearchPage extends StatelessWidget {
-  const SearchPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Search')),
-      body: const Center(
-        child: Text(
-          'Search Page',
-          style: TextStyle(fontSize: 24, color: Colors.white),
-        ),
-      ),
     );
   }
 }

@@ -28,6 +28,7 @@ class _HomePageState extends State<HomePage> {
           const SearchBarInput(
             title: "Search a title...",
             width: double.infinity,
+            showFilterIcon: true,
           ),
           const SizedBox(height: 24),
           HomeCarousel(
