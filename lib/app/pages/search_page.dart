@@ -29,6 +29,9 @@ class _SearchPageState extends State<SearchPage> {
           buildCategories(),
           SizedBox(height: 24),
           buildToday(),
+          SizedBox(height: 24),
+          buildRecommend(),
+          SizedBox(height: 24),
         ],
       ),
     );
@@ -68,7 +71,7 @@ class _SearchPageState extends State<SearchPage> {
         ),
 
         SizedBox(height: 16),
-        Container(
+        SizedBox(
           height: 147,
           width: double.infinity,
           child: Row(
@@ -154,6 +157,131 @@ class _SearchPageState extends State<SearchPage> {
                     ],
                   ),
                 ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildRecommend() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Recommend for you",
+              style: whiteTextStyle.copyWith(
+                fontSize: 16,
+                fontWeight: semiBold,
+              ),
+            ),
+            Text(
+              "See All",
+              style: darkBlueTextStyle.copyWith(
+                fontSize: 14,
+                fontWeight: medium,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 15),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: const [
+              HomeCard(
+                imageUrl: "assets/images/card.png",
+                title: "Spider-Man No Way Home",
+                subTitle: 'Action',
+                rate: '4.8',
+              ),
+              SizedBox(width: 12),
+              HomeCard(
+                imageUrl: "assets/images/card1.png",
+                title: "Eternals",
+                subTitle: 'Action',
+                rate: '4.5',
+              ),
+              SizedBox(width: 12),
+              HomeCard(
+                imageUrl: "assets/images/card2.png",
+                title: "Venom",
+                subTitle: 'Action',
+                rate: '4.7',
+              ),
+              SizedBox(width: 12),
+              HomeCard(
+                imageUrl: "assets/images/card.png",
+                title: "Shang-Chi",
+                subTitle: 'Action',
+                rate: '4.9',
+              ),
+              SizedBox(width: 12),
+              HomeCard(
+                imageUrl: "assets/images/card1.png",
+                title: "Black Widow",
+                subTitle: 'Action',
+                rate: '4.6',
+              ),
+              SizedBox(width: 12),
+              HomeCard(
+                imageUrl: "assets/images/card2.png",
+                title: "Dune",
+                subTitle: 'Sci-Fi',
+                rate: '4.8',
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 15),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: const [
+              HomeCard(
+                imageUrl: "assets/images/card.png",
+                title: "Spider-Man No Way Home",
+                subTitle: 'Action',
+                rate: '4.8',
+              ),
+              SizedBox(width: 12),
+              HomeCard(
+                imageUrl: "assets/images/card1.png",
+                title: "Eternals",
+                subTitle: 'Action',
+                rate: '4.5',
+              ),
+              SizedBox(width: 12),
+              HomeCard(
+                imageUrl: "assets/images/card2.png",
+                title: "Venom",
+                subTitle: 'Action',
+                rate: '4.7',
+              ),
+              SizedBox(width: 12),
+              HomeCard(
+                imageUrl: "assets/images/card.png",
+                title: "Shang-Chi",
+                subTitle: 'Action',
+                rate: '4.9',
+              ),
+              SizedBox(width: 12),
+              HomeCard(
+                imageUrl: "assets/images/card1.png",
+                title: "Black Widow",
+                subTitle: 'Action',
+                rate: '4.6',
+              ),
+              SizedBox(width: 12),
+              HomeCard(
+                imageUrl: "assets/images/card2.png",
+                title: "Dune",
+                subTitle: 'Sci-Fi',
+                rate: '4.8',
               ),
             ],
           ),
