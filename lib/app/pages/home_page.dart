@@ -120,7 +120,17 @@ class _HomePageState extends State<HomePage> {
         ),
         const SizedBox(height: 15),
         CategoryTabs(
-          categories: const ['All', 'Action', 'Comedy', 'Drama', 'Horror'],
+          categories: const [
+            'All',
+            'Action',
+            'Comedy',
+            'Drama',
+            'Horror',
+            'Action',
+            'Comedy',
+            'Drama',
+            'Horror',
+          ],
           initialIndex: 0,
           onCategorySelected: (index, category) {
             // Handle category selection
