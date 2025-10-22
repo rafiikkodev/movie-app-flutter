@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/pages/onboarding_page.dart';
 import 'package:template_project_flutter/app/pages/home_page.dart';
+import 'package:template_project_flutter/app/pages/search_by_actor_page.dart';
 import 'package:template_project_flutter/app/pages/search_page.dart';
 import 'package:template_project_flutter/app/pages/search_result_page.dart';
 import 'package:template_project_flutter/widgets/navbar.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         "/home": (context) => const MainNavigation(),
         "/search": (context) => const SearchPage(),
         "/search_result": (context) => const SearchResultPage(),
+        "/search_by_actor": (context) => const SearchByActorPage(),
       },
     );
   }
@@ -57,9 +59,9 @@ class MainNavigation extends StatelessWidget {
           label: 'Search',
         ),
         NavItem(
-          icon: 'assets/icons-white/heart.svg',
-          selectedIcon: 'assets/icons-blue-accent/heart.svg',
-          label: 'Favorites',
+          icon: 'assets/icons-white/download.svg',
+          selectedIcon: 'assets/icons-blue-accent/download.svg',
+          label: 'Download',
         ),
         NavItem(
           icon: 'assets/icons-white/profile 1.svg',

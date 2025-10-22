@@ -1,0 +1,220 @@
+import 'package:flutter/material.dart';
+import 'package:template_project_flutter/app/core/theme/theme.dart';
+import 'package:template_project_flutter/widgets/home_card.dart';
+import 'package:template_project_flutter/widgets/inputs.dart';
+
+class SearchByActorPage extends StatefulWidget {
+  const SearchByActorPage({super.key});
+
+  @override
+  State<SearchByActorPage> createState() => _SearchByActorPageState();
+}
+
+class _SearchByActorPageState extends State<SearchByActorPage> {
+  final TextEditingController searchController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: ListView(
+        padding: const EdgeInsets.only(right: 24, left: 24, top: 52),
+        children: [
+          SearchBarInputResult(
+            title: "Type title, categories, years, etc",
+            showFilterIcon: false,
+            controller: searchController,
+          ),
+          SizedBox(height: 24),
+          buildActors(),
+          SizedBox(height: 24),
+          buildMovieRelated(),
+          SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget buildActors() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Categories",
+          style: whiteTextStyle.copyWith(fontSize: 16, fontWeight: semiBold),
+        ),
+        const SizedBox(height: 15),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Column(
+                    children: [
+                      Image.asset("assets/images/actors.png", height: 64),
+                      SizedBox(height: 8),
+                      Text(
+                        "nama lengkap",
+                        style: whiteTextStyle.copyWith(
+                          fontSize: 12,
+                          fontWeight: semiBold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(width: 12),
+                  Column(
+                    children: [
+                      Image.asset("assets/images/actors.png", height: 64),
+                      SizedBox(height: 8),
+                      Text(
+                        "nama lengkap",
+                        style: whiteTextStyle.copyWith(
+                          fontSize: 12,
+                          fontWeight: semiBold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(width: 12),
+                  Column(
+                    children: [
+                      Image.asset("assets/images/actors.png", height: 64),
+                      SizedBox(height: 8),
+                      Text(
+                        "nama lengkap",
+                        style: whiteTextStyle.copyWith(
+                          fontSize: 12,
+                          fontWeight: semiBold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(width: 12),
+                  Column(
+                    children: [
+                      Image.asset("assets/images/actors.png", height: 64),
+                      SizedBox(height: 8),
+                      Text(
+                        "nama lengkap",
+                        style: whiteTextStyle.copyWith(
+                          fontSize: 12,
+                          fontWeight: semiBold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildMovieRelated() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Movie Related",
+              style: whiteTextStyle.copyWith(
+                fontSize: 16,
+                fontWeight: semiBold,
+              ),
+            ),
+            Text(
+              "See All",
+              style: darkBlueTextStyle.copyWith(
+                fontSize: 14,
+                fontWeight: medium,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 15),
+        SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            children: [
+              SearchCard(
+                imageUrl: "assets/images/card.png",
+                title: "title",
+                year: "year",
+                duration: "duration",
+                rating: "rating",
+                genre: 'genre',
+                rate: "rate",
+              ),
+              SizedBox(height: 16),
+              SearchCard(
+                imageUrl: "assets/images/card.png",
+                title: "title",
+                year: "year",
+                duration: "duration",
+                rating: "rating",
+                genre: 'genre',
+                rate: "rate",
+              ),
+              SizedBox(height: 16),
+              SearchCard(
+                imageUrl: "assets/images/card.png",
+                title: "title",
+                year: "year",
+                duration: "duration",
+                rating: "rating",
+                genre: 'genre',
+                rate: "rate",
+              ),
+              SizedBox(height: 16),
+              SearchCard(
+                imageUrl: "assets/images/card.png",
+                title: "title",
+                year: "year",
+                duration: "duration",
+                rating: "rating",
+                genre: 'genre',
+                rate: "rate",
+              ),
+              SizedBox(height: 16),
+              SearchCard(
+                imageUrl: "assets/images/card.png",
+                title: "title",
+                year: "year",
+                duration: "duration",
+                rating: "rating",
+                genre: 'genre',
+                rate: "rate",
+              ),
+              SizedBox(height: 16),
+              SearchCard(
+                imageUrl: "assets/images/card.png",
+                title: "title",
+                year: "year",
+                duration: "duration",
+                rating: "rating",
+                genre: 'genre',
+                rate: "rate",
+              ),
+              SizedBox(height: 16),
+              SearchCard(
+                imageUrl: "assets/images/card.png",
+                title: "title",
+                year: "year",
+                duration: "duration",
+                rating: "rating",
+                genre: 'genre',
+                rate: "rate",
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
