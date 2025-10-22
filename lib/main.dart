@@ -3,6 +3,7 @@ import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/pages/onboarding_page.dart';
 import 'package:template_project_flutter/app/pages/home_page.dart';
 import 'package:template_project_flutter/app/pages/search_page.dart';
+import 'package:template_project_flutter/app/pages/search_result_page.dart';
 import 'package:template_project_flutter/widgets/navbar.dart';
 
 void main() => runApp(const MyApp());
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
         "/": (context) => const OnboardingPage(),
         "/home": (context) => const MainNavigation(),
         "/search": (context) => const SearchPage(),
+        "/search_result": (context) => const SearchResultPage(),
       },
     );
   }

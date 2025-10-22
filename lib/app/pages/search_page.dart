@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
-import 'package:template_project_flutter/widgets/buttons.dart';
+import 'package:template_project_flutter/app/pages/search_result_page.dart';
 import 'package:template_project_flutter/widgets/home_card.dart';
-import 'package:template_project_flutter/widgets/inputs.dart';
 import 'package:template_project_flutter/widgets/toggle_buttons.dart';
 
 class SearchPage extends StatefulWidget {
@@ -14,16 +12,53 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  final TextEditingController searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView(
         padding: const EdgeInsets.only(right: 24, left: 24, top: 52),
         children: [
-          SearchBarInput(
-            title: "Type title, categories, years, etc",
-            width: double.infinity,
-            showFilterIcon: false,
+          // SearchBarInput(
+          //   title: "Type title, categories, years, etc",
+          //   width: double.infinity,
+          //   showFilterIcon: false,
+          //   controller: searchController,
+          // ),
+          InkWell(
+            borderRadius: BorderRadius.circular(56),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SearchResultPage(),
+                ),
+              );
+            },
+            child: Container(
+              height: 40,
+              decoration: BoxDecoration(
+                color: softColor,
+                borderRadius: BorderRadius.circular(56),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  Icon(Icons.search, color: greyColor, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      "title",
+                      style: TextStyle(
+                        color: greyColor,
+                        fontSize: 12,
+                        fontWeight: medium,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
           SizedBox(height: 24),
           buildCategories(),
@@ -71,95 +106,14 @@ class _SearchPageState extends State<SearchPage> {
         ),
 
         SizedBox(height: 16),
-        SizedBox(
-          height: 147,
-          width: double.infinity,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SearchCard(imageUrl: "assets/images/card.png", rate: '4.8'),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CustomButton.primary(
-                    title: "Premium",
-                    width: 70,
-                    fontSize: 10,
-                    size: ButtonSize.extraSmall,
-                  ),
-                  Text(
-                    "Spider-Man No Way Home",
-                    style: whiteTextStyle.copyWith(
-                      fontWeight: semiBold,
-                      fontSize: 16,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    maxLines: 1,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SvgPicture.asset(
-                        'assets/icons-white/calendar.svg',
-                        width: 24,
-                        height: 24,
-                      ),
-                      SizedBox(width: 4),
-                      Text(
-                        "2021",
-                        style: whiteTextStyle.copyWith(
-                          fontSize: 12,
-                          fontWeight: medium,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      SvgPicture.asset(
-                        'assets/icons-white/clock.svg',
-                        width: 24,
-                        height: 24,
-                      ),
-                      SizedBox(width: 4),
-                      Text(
-                        "148 Minutes",
-                        style: whiteTextStyle.copyWith(
-                          fontSize: 12,
-                          fontWeight: medium,
-                        ),
-                      ),
-                      SizedBox(width: 12),
-                      CustomButton.outlined(
-                        title: "PG-13",
-                        width: 84,
-                        fontSize: 12,
-                        size: ButtonSize.extraSmall,
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      SvgPicture.asset(
-                        'assets/icons-white/film.svg',
-                        width: 24,
-                        height: 24,
-                      ),
-                      SizedBox(width: 4),
-                      Text(
-                        "Action | Movie",
-                        style: whiteTextStyle.copyWith(
-                          fontSize: 12,
-                          fontWeight: medium,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
+        SearchCard(
+          imageUrl: "assets/images/card.png",
+          title: "title",
+          year: "year",
+          duration: "duration",
+          rating: "rating",
+          genre: 'genre',
+          rate: "rate",
         ),
       ],
     );

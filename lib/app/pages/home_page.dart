@@ -15,6 +15,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final TextEditingController searchController = TextEditingController();
+
   int selectedIndex = 0;
 
   @override
@@ -25,10 +27,11 @@ class _HomePageState extends State<HomePage> {
         children: [
           buildAccount(),
           const SizedBox(height: 32),
-          const SearchBarInput(
-            title: "Search a title...",
+          SearchBarInput(
+            title: "Type title, categories, years, etc",
             width: double.infinity,
             showFilterIcon: true,
+            controller: searchController,
           ),
           const SizedBox(height: 24),
           HomeCarousel(
