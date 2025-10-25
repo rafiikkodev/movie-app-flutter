@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/widgets/rate.dart';
 
@@ -61,7 +62,17 @@ class WishlistCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 8),
-                CustomTextRate(number: rate),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CustomTextRate(number: rate),
+                    SvgPicture.asset(
+                      'assets/icons-blue-accent/heart.svg',
+                      width: 24,
+                      height: 24,
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
