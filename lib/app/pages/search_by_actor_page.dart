@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/pages/movie_detail_page.dart';
 import 'package:template_project_flutter/widgets/home_card.dart';
-import 'package:template_project_flutter/widgets/inputs.dart';
 
 class SearchByActorPage extends StatefulWidget {
   const SearchByActorPage({super.key});

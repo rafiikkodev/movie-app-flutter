@@ -42,7 +42,7 @@ class HomeCard extends StatelessWidget {
                   Positioned.fill(
                     child: Image.asset(imageUrl, fit: BoxFit.cover),
                   ),
-                  Positioned(top: 8, right: 8, child: CustomRate(number: rate)),
+                  Positioned(top: 8, right: 8, child: CustomFillRate(number: rate)),
                 ],
               ),
             ),
@@ -121,7 +121,7 @@ class SearchCard extends StatelessWidget {
                   Positioned.fill(
                     child: Image.asset(imageUrl, fit: BoxFit.cover),
                   ),
-                  Positioned(top: 8, left: 8, child: CustomRate(number: rate)),
+                  Positioned(top: 8, left: 8, child: CustomFillRate(number: rate)),
                 ],
               ),
             ),

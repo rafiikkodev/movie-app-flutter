@@ -182,7 +182,7 @@ class _TitleAndRating extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        const CustomRate(number: '4.8'),
+        const CustomFillRate(number: '4.8'),
       ],
     );
   }
@@ -422,7 +422,7 @@ class _SimilarMovieItem extends StatelessWidget {
       child: Stack(
         children: [
           Image.asset(imageUrl, width: 135, height: 200, fit: BoxFit.cover),
-          Positioned(top: 8, right: 8, child: CustomRate(number: rate)),
+          Positioned(top: 8, right: 8, child: CustomFillRate(number: rate)),
         ],
       ),
     );

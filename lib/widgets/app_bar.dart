@@ -7,6 +7,7 @@ class CustomAppBar extends StatelessWidget {
   final VoidCallback? onBackPressed;
   final VoidCallback? onFavoritePressed;
   final bool isFavorite;
+  final String? title;
 
   const CustomAppBar({
     super.key,
@@ -15,6 +16,7 @@ class CustomAppBar extends StatelessWidget {
     this.onBackPressed,
     this.onFavoritePressed,
     this.isFavorite = false,
+    this.title,
   });
 
   @override
@@ -25,7 +27,7 @@ class CustomAppBar extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Tombol back
+            // Back button
             if (showBackButton)
               _buildButton(
                 icon: Icons.arrow_back_ios_new_rounded,
@@ -34,7 +36,22 @@ class CustomAppBar extends StatelessWidget {
             else
               const SizedBox(width: 48),
 
-            // Tombol favorite (optional)
+            // Title di tengah
+            if (title != null)
+              Expanded(
+                child: Text(
+                  title!,
+                  style: whiteTextStyle.copyWith(
+                    fontSize: 18,
+                    fontWeight: semiBold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              )
+            else
+              const Expanded(child: SizedBox()),
+
+            // Favorite button
             if (showFavoriteButton)
               _buildButton(
                 icon: isFavorite ? Icons.favorite : Icons.favorite_border,

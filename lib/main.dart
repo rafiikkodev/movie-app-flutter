@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
+import 'package:template_project_flutter/app/pages/download_page.dart';
 import 'package:template_project_flutter/app/pages/movie_detail_page.dart';
 import 'package:template_project_flutter/app/pages/onboarding_page.dart';
 import 'package:template_project_flutter/app/pages/home_page.dart';
 import 'package:template_project_flutter/app/pages/search_by_actor_page.dart';
 import 'package:template_project_flutter/app/pages/search_page.dart';
 import 'package:template_project_flutter/app/pages/search_result_page.dart';
+import 'package:template_project_flutter/app/pages/wishlist_page.dart';
 import 'package:template_project_flutter/widgets/navbar.dart';
 
 void main() => runApp(const MyApp());
@@ -38,6 +40,8 @@ class MyApp extends StatelessWidget {
         "/search_result": (context) => const SearchResultPage(),
         "/search_by_actor": (context) => const SearchByActorPage(),
         "/movie_detail": (context) => const MovieDetailPage(),
+        "/download": (context) => const DownloadPage(),
+        "/wishlist": (context) => const WishlistPage(),
       },
     );
   }
@@ -71,24 +75,7 @@ class MainNavigation extends StatelessWidget {
           label: 'Profile',
         ),
       ],
-      pages: const [HomePage(), SearchPage(), FavoritesPage(), ProfilePage()],
-    );
-  }
-}
-
-class FavoritesPage extends StatelessWidget {
-  const FavoritesPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Favorites')),
-      body: const Center(
-        child: Text(
-          'Favorites Page',
-          style: TextStyle(fontSize: 24, color: Colors.white),
-        ),
-      ),
+      pages: const [HomePage(), SearchPage(), DownloadPage(), ProfilePage()],
     );
   }
 }

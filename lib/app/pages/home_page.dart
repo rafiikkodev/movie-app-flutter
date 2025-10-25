@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/data/models/home_carousel_models.dart';
+import 'package:template_project_flutter/app/pages/wishlist_page.dart';
 import 'package:template_project_flutter/widgets/home_card.dart';
 import 'package:template_project_flutter/widgets/home_carousel.dart';
 import 'package:template_project_flutter/widgets/inputs.dart';
@@ -94,18 +95,26 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          Container(
-            height: 36,
-            width: 36,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: softColor,
-            ),
-            child: Center(
-              child: SvgPicture.asset(
-                'assets/icons-blue-accent/heart.svg',
-                width: 24,
-                height: 24,
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const WishlistPage()),
+              );
+            },
+            child: Container(
+              height: 36,
+              width: 36,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: softColor,
+              ),
+              child: Center(
+                child: SvgPicture.asset(
+                  'assets/icons-blue-accent/heart.svg',
+                  width: 24,
+                  height: 24,
+                ),
               ),
             ),
           ),
