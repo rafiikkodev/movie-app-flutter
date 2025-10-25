@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
+import 'package:template_project_flutter/app/pages/movie_detail_page.dart';
 import 'package:template_project_flutter/widgets/home_card.dart';
 import 'package:template_project_flutter/widgets/inputs.dart';
 
@@ -19,10 +20,45 @@ class _SearchByActorPageState extends State<SearchByActorPage> {
       body: ListView(
         padding: const EdgeInsets.only(right: 24, left: 24, top: 52),
         children: [
-          SearchBarInputResult(
-            title: "Type title, categories, years, etc",
-            showFilterIcon: false,
-            controller: searchController,
+          // SearchBarInputResult(
+          //   title: "Type title, categories, years, etc",
+          //   showFilterIcon: false,
+          //   controller: searchController,
+          // ),
+          InkWell(
+            borderRadius: BorderRadius.circular(56),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MovieDetailPage(),
+                ),
+              );
+            },
+            child: Container(
+              height: 40,
+              decoration: BoxDecoration(
+                color: softColor,
+                borderRadius: BorderRadius.circular(56),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  Icon(Icons.search, color: greyColor, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      "title",
+                      style: TextStyle(
+                        color: greyColor,
+                        fontSize: 12,
+                        fontWeight: medium,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
           SizedBox(height: 24),
           buildActors(),
@@ -150,6 +186,14 @@ class _SearchByActorPageState extends State<SearchByActorPage> {
                 rating: "rating",
                 genre: 'genre',
                 rate: "rate",
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MovieDetailPage(),
+                    ),
+                  );
+                },
               ),
               SizedBox(height: 16),
               SearchCard(

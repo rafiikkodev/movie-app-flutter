@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
+import 'package:template_project_flutter/app/pages/movie_detail_page.dart';
 import 'package:template_project_flutter/app/pages/onboarding_page.dart';
 import 'package:template_project_flutter/app/pages/home_page.dart';
 import 'package:template_project_flutter/app/pages/search_by_actor_page.dart';
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
         "/search": (context) => const SearchPage(),
         "/search_result": (context) => const SearchResultPage(),
         "/search_by_actor": (context) => const SearchByActorPage(),
+        "/movie_detail": (context) => const MovieDetailPage(),
       },
     );
   }
