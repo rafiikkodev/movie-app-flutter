@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:template_project_flutter/widgets/download_card.dart';
 import 'package:template_project_flutter/widgets/app_bar.dart';
 import 'package:template_project_flutter/widgets/wishlist_card.dart';
 

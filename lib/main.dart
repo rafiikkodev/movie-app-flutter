@@ -4,6 +4,7 @@ import 'package:template_project_flutter/app/pages/download_page.dart';
 import 'package:template_project_flutter/app/pages/movie_detail_page.dart';
 import 'package:template_project_flutter/app/pages/onboarding_page.dart';
 import 'package:template_project_flutter/app/pages/home_page.dart';
+import 'package:template_project_flutter/app/pages/profile_page.dart';
 import 'package:template_project_flutter/app/pages/search_by_actor_page.dart';
 import 'package:template_project_flutter/app/pages/search_page.dart';
 import 'package:template_project_flutter/app/pages/search_result_page.dart';
@@ -42,6 +43,7 @@ class MyApp extends StatelessWidget {
         "/movie_detail": (context) => const MovieDetailPage(),
         "/download": (context) => const DownloadPage(),
         "/wishlist": (context) => const WishlistPage(),
+        "/profile": (context) => const ProfilePage(),
       },
     );
   }
@@ -76,23 +78,6 @@ class MainNavigation extends StatelessWidget {
         ),
       ],
       pages: const [HomePage(), SearchPage(), DownloadPage(), ProfilePage()],
-    );
-  }
-}
-
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
-      body: const Center(
-        child: Text(
-          'Profile Page',
-          style: TextStyle(fontSize: 24, color: Colors.white),
-        ),
-      ),
     );
   }
 }

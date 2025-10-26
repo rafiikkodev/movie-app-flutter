@@ -81,37 +81,3 @@ class WishlistCard extends StatelessWidget {
     );
   }
 }
-
-// usage
-
-// app bar + bg
-// Scaffold(
-//   appBar: const CustomAppBar(
-//     title: "Detail Film",
-//     showFavoriteButton: true,
-//     isSticky: true, // tetap ada + background color
-//   ),
-//   body: ListView(
-//     children: [
-//       ... // konten panjang
-//     ],
-//   ),
-// );
-
-// app bar hilang saat scroll
-// CustomScrollView(
-//   slivers: [
-//     SliverToBoxAdapter(
-//       child: CustomAppBar(
-//         title: "Detail Film",
-//         isSticky: false, // akan hilang saat scroll
-//       ),
-//     ),
-//     SliverList(
-//       delegate: SliverChildBuilderDelegate(
-//         (context, index) => ListTile(title: Text("Item $index")),
-//         childCount: 30,
-//       ),
-//     ),
-//   ],
-// );
