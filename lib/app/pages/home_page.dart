@@ -145,9 +145,7 @@ class _HomePageState extends State<HomePage> {
             'Horror',
           ],
           initialIndex: 0,
-          onCategorySelected: (index, category) {
-            // Handle category selection
-          },
+          onCategorySelected: (index, category) {},
         ),
       ],
     );
