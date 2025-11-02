@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
-import 'package:template_project_flutter/app/data/models/home_carousel_models.dart';
-import 'package:template_project_flutter/app/pages/wishlist_page.dart';
+import 'package:template_project_flutter/app/data/models/movie_model.dart';
+import 'package:template_project_flutter/app/data/repositories/movie_repository.dart';
 import 'package:template_project_flutter/widgets/home_card.dart';
 import 'package:template_project_flutter/widgets/home_carousel.dart';
 import 'package:template_project_flutter/widgets/inputs.dart';
@@ -16,50 +16,113 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final MovieRepository _repository = MovieRepository();
   final TextEditingController searchController = TextEditingController();
 
-  int selectedIndex = 0;
+  List<MovieModel> nowPlayingMovies = [];
+  List<MovieModel> popularMovies = [];
+  bool isLoading = true;
+  String errorMessage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMovies();
+  }
+
+  Future<void> _loadMovies() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = '';
+    });
+
+    try {
+      final nowPlaying = await _repository.getNowPlayingMovies();
+      final popular = await _repository.getPopularMovies();
+
+      setState(() {
+        nowPlayingMovies = nowPlaying;
+        popularMovies = popular;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        errorMessage = e.toString();
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        children: [
-          buildAccount(),
-          const SizedBox(height: 32),
-          SearchBarInput(
-            title: "Type title, categories, years, etc",
-            width: double.infinity,
-            showFilterIcon: true,
-            controller: searchController,
-          ),
-          const SizedBox(height: 24),
-          HomeCarousel(
-            items: const [
-              HomeCarouselItem(
-                imageUrl: 'assets/images/carousel 3.png',
-                title: 'Spider-Man: No Way Home',
-                subtitle: 'On March 2, 2022',
+      body: RefreshIndicator(
+        onRefresh: _loadMovies,
+        child: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          children: [
+            buildAccount(),
+            const SizedBox(height: 24),
+            SearchBarInput(
+              title: "Search",
+              showFilterIcon: true,
+              controller: searchController,
+              width: double.infinity,
+            ),
+            const SizedBox(height: 24),
+
+            // Loading State
+            if (isLoading)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(50),
+                  child: CircularProgressIndicator(),
+                ),
               ),
-              HomeCarouselItem(
-                imageUrl: 'assets/images/carousel 2.png',
-                title: 'The Batman',
-                subtitle: 'On March 2, 2022',
+
+            // Error State
+            if (errorMessage.isNotEmpty)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(50),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Error: $errorMessage',
+                        style: whiteTextStyle,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _loadMovies,
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              HomeCarouselItem(
-                imageUrl: 'assets/images/carousel 4.png',
-                title: 'Doctor Strange',
-                subtitle: 'On March 2, 2022',
+
+            // Success State - Now Playing Carousel
+            if (!isLoading && nowPlayingMovies.isNotEmpty)
+              HomeCarousel(
+                items: nowPlayingMovies.take(5).map((movie) {
+                  return HomeCarouselItem(
+                    imageUrl: movie.backdropUrl,
+                    title: movie.title,
+                    subtitle: 'Released: ${movie.releaseDate}',
+                  );
+                }).toList(),
+                initialPage: 1,
               ),
-            ],
-            initialPage: 1,
-          ),
-          const SizedBox(height: 24),
-          buildCategories(),
-          const SizedBox(height: 24),
-          buildMostPopular(),
-        ],
+
+            const SizedBox(height: 24),
+            buildCategories(),
+            const SizedBox(height: 24),
+
+            // Popular Movies Section
+            if (!isLoading && popularMovies.isNotEmpty) buildMostPopular(),
+          ],
+        ),
       ),
     );
   }
@@ -97,10 +160,7 @@ class _HomePageState extends State<HomePage> {
           ),
           GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const WishlistPage()),
-              );
+              Navigator.pushNamed(context, "/wishlist");
             },
             child: Container(
               height: 36,
@@ -124,30 +184,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget buildCategories() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Categories",
-          style: whiteTextStyle.copyWith(fontSize: 16, fontWeight: semiBold),
-        ),
-        const SizedBox(height: 15),
-        CategoryTabs(
-          categories: const [
-            'All',
-            'Action',
-            'Comedy',
-            'Drama',
-            'Horror',
-            'Action',
-            'Comedy',
-            'Drama',
-            'Horror',
-          ],
-          initialIndex: 0,
-          onCategorySelected: (index, category) {},
-        ),
-      ],
+    return CategoryTabs(
+      categories: const ['All', 'Action', 'Comedy', 'Drama', 'Horror'],
+      initialIndex: 0,
+      onCategorySelected: (index, category) {
+        // TODO: Filter movies by category
+      },
     );
   }
 
@@ -165,62 +207,40 @@ class _HomePageState extends State<HomePage> {
                 fontWeight: semiBold,
               ),
             ),
-            Text(
-              "See All",
-              style: darkBlueTextStyle.copyWith(
-                fontSize: 14,
-                fontWeight: medium,
+            GestureDetector(
+              onTap: () {
+                // TODO: Navigate to see all
+              },
+              child: Text(
+                "See All",
+                style: darkBlueTextStyle.copyWith(
+                  fontSize: 14,
+                  fontWeight: medium,
+                ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 15),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: const [
-              HomeCard(
-                imageUrl: "assets/images/card.png",
-                title: "Spider-Man No Way Home",
-                subTitle: 'Action',
-                rate: '4.8',
-              ),
-              SizedBox(width: 12),
-              HomeCard(
-                imageUrl: "assets/images/card1.png",
-                title: "Eternals",
-                subTitle: 'Action',
-                rate: '4.5',
-              ),
-              SizedBox(width: 12),
-              HomeCard(
-                imageUrl: "assets/images/card2.png",
-                title: "Venom",
-                subTitle: 'Action',
-                rate: '4.7',
-              ),
-              SizedBox(width: 12),
-              HomeCard(
-                imageUrl: "assets/images/card.png",
-                title: "Shang-Chi",
-                subTitle: 'Action',
-                rate: '4.9',
-              ),
-              SizedBox(width: 12),
-              HomeCard(
-                imageUrl: "assets/images/card1.png",
-                title: "Black Widow",
-                subTitle: 'Action',
-                rate: '4.6',
-              ),
-              SizedBox(width: 12),
-              HomeCard(
-                imageUrl: "assets/images/card2.png",
-                title: "Dune",
-                subTitle: 'Sci-Fi',
-                rate: '4.8',
-              ),
-            ],
+        const SizedBox(height: 16),
+        SizedBox(
+          height: 231,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: popularMovies.length,
+            separatorBuilder: (context, index) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              final movie = popularMovies[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    "/movie_detail",
+                    arguments: movie.id,
+                  );
+                },
+                child: HomeCard(imageUrl: movie.posterUrl, rate: movie.rating),
+              );
+            },
           ),
         ),
       ],

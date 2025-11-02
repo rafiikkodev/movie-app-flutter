@@ -1,106 +1,165 @@
-import 'package:extended_image/extended_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
-import 'package:template_project_flutter/app/data/models/home_carousel_models.dart';
 
-class HomeCarousel extends StatelessWidget {
+class HomeCarouselItem {
+  final String imageUrl;
+  final String title;
+  final String subtitle;
+
+  const HomeCarouselItem({
+    required this.imageUrl,
+    required this.title,
+    required this.subtitle,
+  });
+}
+
+class HomeCarousel extends StatefulWidget {
   final List<HomeCarouselItem> items;
-  final double borderRadius;
   final int initialPage;
-  final PageController _pageController;
 
-  HomeCarousel({
-    super.key,
-    required this.items,
-    this.borderRadius = 16,
-    this.initialPage = 0,
-  }) : _pageController = PageController(
-         viewportFraction: 0.85,
-         initialPage: initialPage,
-       );
+  const HomeCarousel({super.key, required this.items, this.initialPage = 0});
+
+  @override
+  State<HomeCarousel> createState() => _HomeCarouselState();
+}
+
+class _HomeCarouselState extends State<HomeCarousel> {
+  int currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    currentIndex = widget.initialPage;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        AspectRatio(
-          aspectRatio: 16 / 6,
-          child: PageView.builder(
-            controller: _pageController,
-            physics: const BouncingScrollPhysics(),
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              final item = items[index];
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(borderRadius),
-                      child: ExtendedImage.asset(
-                        item.imageUrl,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(borderRadius),
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [blackColor.withAlpha(45), blackColor],
+        CarouselSlider(
+          items: widget.items.map((item) {
+            return Builder(
+              builder: (BuildContext context) {
+                return Container(
+                  width: MediaQuery.of(context).size.width,
+                  margin: const EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Stack(
+                      children: [
+                        // Background image
+                        Positioned.fill(
+                          child: CachedNetworkImage(
+                            imageUrl: item.imageUrl,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: softColor,
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  color: darkBlueAccent,
+                                ),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: softColor,
+                              child: Icon(
+                                Icons.movie,
+                                color: greyColor,
+                                size: 80,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 16,
-                      right: 16,
-                      bottom: 8,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item.title,
-                            style: whiteTextStyle.copyWith(
-                              fontSize: 16,
-                              fontWeight: semiBold,
+                        // Gradient overlay
+                        Positioned.fill(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.transparent,
+                                  Colors.black.withOpacity(0.7),
+                                ],
+                                stops: const [0.5, 1.0],
+                              ),
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            item.subtitle,
-                            style: greyTextStyle.copyWith(
-                              fontSize: 12,
-                              fontWeight: medium,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                        ),
+                        // Content
+                        Positioned(
+                          bottom: 20,
+                          left: 20,
+                          right: 20,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.title,
+                                style: whiteTextStyle.copyWith(
+                                  fontSize: 18,
+                                  fontWeight: semiBold,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                item.subtitle,
+                                style: greyTextStyle.copyWith(
+                                  fontSize: 12,
+                                  fontWeight: medium,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              );
+                  ),
+                );
+              },
+            );
+          }).toList(),
+          options: CarouselOptions(
+            height: 154,
+            aspectRatio: 16 / 9,
+            viewportFraction: 0.8,
+            initialPage: widget.initialPage,
+            enableInfiniteScroll: true,
+            autoPlay: true,
+            autoPlayInterval: const Duration(seconds: 3),
+            autoPlayAnimationDuration: const Duration(milliseconds: 800),
+            autoPlayCurve: Curves.fastOutSlowIn,
+            enlargeCenterPage: true,
+            onPageChanged: (index, reason) {
+              setState(() {
+                currentIndex = index;
+              });
             },
           ),
         ),
-        const SizedBox(height: 12),
-        SmoothPageIndicator(
-          controller: _pageController,
-          count: items.length,
-          effect: WormEffect(
-            dotHeight: 8,
-            dotWidth: 8,
-            spacing: 8,
-            activeDotColor: darkBlueAccent,
-            dotColor: darkBlueAccent.withAlpha(30),
-          ),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: widget.items.asMap().entries.map((entry) {
+            return Container(
+              width: currentIndex == entry.key ? 20 : 8,
+              height: 8,
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                color: currentIndex == entry.key
+                    ? darkBlueAccent
+                    : greyColor.withOpacity(0.3),
+              ),
+            );
+          }).toList(),
         ),
       ],
     );

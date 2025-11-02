@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
@@ -6,76 +7,60 @@ import 'package:template_project_flutter/widgets/rate.dart';
 
 class HomeCard extends StatelessWidget {
   final String imageUrl;
-  final String title;
-  final String subTitle;
   final String rate;
+  final VoidCallback? onTap;
 
   const HomeCard({
     super.key,
     required this.imageUrl,
-    required this.title,
-    required this.subTitle,
     required this.rate,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 135,
-      height: 250,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: softColor,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadiusDirectional.vertical(
-              top: Radius.circular(12),
-            ),
-            child: SizedBox(
-              width: 135,
-              height: 178,
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: Image.asset(imageUrl, fit: BoxFit.cover),
+    return GestureDetector(
+      onTap: onTap,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          width: 135,
+          height: 231,
+          decoration: BoxDecoration(
+            color: softColor,
+          ),
+          child: Stack(
+            children: [
+              // Network Image dengan cache
+              Positioned.fill(
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Center(
+                    child: CircularProgressIndicator(
+                      color: darkBlueAccent,
+                      strokeWidth: 2,
+                    ),
                   ),
-                  Positioned(top: 8, right: 8, child: CustomFillRate(number: rate)),
-                ],
+                  errorWidget: (context, url, error) => Container(
+                    color: softColor,
+                    child: Icon(
+                      Icons.movie,
+                      color: greyColor,
+                      size: 50,
+                    ),
+                  ),
+                ),
               ),
-            ),
+              // Rating badge
+              Positioned(
+                top: 8,
+                right: 8,
+                child: CustomFillRate(number: rate),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: whiteTextStyle.copyWith(
-                    fontWeight: semiBold,
-                    fontSize: 14,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  maxLines: 1,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subTitle,
-                  style: greyTextStyle.copyWith(
-                    fontWeight: medium,
-                    fontSize: 10,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  maxLines: 1,
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
