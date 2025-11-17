@@ -15,8 +15,8 @@ class ApiConfig {
   static const String popularMovies = '/movie/popular';
   static const String topRatedMovies = '/movie/top_rated';
   static const String upcomingMovies = '/movie/upcoming';
-  static const String searchMovies = '/search/movie';
   static const String movieDetail = '/movie';
+  static const String searchMovies = '/search/movie';
   static const String movieCredits = '/movie/{movie_id}/credits';
   static const String similarMovies = '/movie/{movie_id}/similar';
   
