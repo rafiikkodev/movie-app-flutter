@@ -13,32 +13,90 @@
 - services/ = Hive, SharedPreferences
 - widgets/ = komponen global UI reusable
 
-## Endpoint TMDB API
-# HOME PAGE
-- GET /movie/now_playing     - Carousel banner
-- GET /movie/popular         - Most Popular section
-- GET /movie/top_rated       - Top Rated (optional)
-- GET /genre/movie/list      - Untuk mapping genre ID ke nama
+## Environment Variables
 
-# SEARCH PAGE
-- GET /search/movie          - Search movies by keyword
-- GET /search/multi          - Search movies, TV, people
+- **TMDB_API_KEY** = *API key Anda*
+- **TMDB_BASE_URL** = `https://api.themoviedb.org/3`
+- **TMDB_IMAGE_BASE_URL** = `https://image.tmdb.org/t/p/w500`
+- **LANG** = `en-US`
+- **MOVIE_ID** = (opsional, isi jika butuh)
+- **PERSON_ID** = (opsional, isi jika butuh)
 
-# SEARCH BY ACTOR PAGE
-- GET /search/person         - Search actors by name
-- GET /person/{person_id}/movie_credits  - Movies by actor
+## 📌 HOME PAGE ENDPOINTS
 
-# MOVIE DETAIL PAGE
-- GET /movie/{movie_id}                  - Movie detail
-- GET /movie/{movie_id}/credits          - Cast & Crew
-- GET /movie/{movie_id}/similar          - Similar movies
-- GET /movie/{movie_id}/videos           - Trailers (optional)
-- GET /movie/{movie_id}/images           - Movie images (optional)
+### 🎬 Now Playing Movies
+```
+GET {{TMDB_BASE_URL}}/movie/now_playing?api_key={{TMDB_API_KEY}}&language={{LANG}}
+```
 
-# WISHLIST PAGE
-- LOCAL STORAGE - Tidak perlu API
-   - Gunakan shared_preferences atau hive untuk save favorite
+### ⭐ Popular Movies
+```
+GET {{TMDB_BASE_URL}}/movie/popular?api_key={{TMDB_API_KEY}}&language={{LANG}}
+```
 
-# DOWNLOAD PAGE
-- LOCAL STORAGE - Tidak perlu API
-   - Gunakan local database untuk track downloaded movies
+### 🏆 Top Rated Movies
+```
+GET {{TMDB_BASE_URL}}/movie/top_rated?api_key={{TMDB_API_KEY}}&language={{LANG}}
+```
+
+### 🏷️ Movie Genres
+```
+GET {{TMDB_BASE_URL}}/genre/movie/list?api_key={{TMDB_API_KEY}}&language={{LANG}}
+```
+
+---
+
+## 🔍 SEARCH PAGE
+
+### 🔎 Search Movies
+```
+GET {{TMDB_BASE_URL}}/search/movie?api_key={{TMDB_API_KEY}}&language={{LANG}}&query=batman
+```
+
+### 🔎 Search Multi (Movies, TV, People)
+```
+GET {{TMDB_BASE_URL}}/search/multi?api_key={{TMDB_API_KEY}}&language={{LANG}}&query=batman
+```
+
+---
+
+## 🧑‍🎤 SEARCH BY ACTOR PAGE
+
+### 👤 Search Person
+```
+GET {{TMDB_BASE_URL}}/search/person?api_key={{TMDB_API_KEY}}&language={{LANG}}&query=brad+pitt
+```
+
+### 🎥 Actor Movie Credits
+```
+GET {{TMDB_BASE_URL}}/person/{{PERSON_ID}}/movie_credits?api_key={{TMDB_API_KEY}}&language={{LANG}}
+```
+
+---
+
+## 🎞️ MOVIE DETAIL PAGE
+
+### 📘 Movie Detail
+```
+GET {{TMDB_BASE_URL}}/movie/{{MOVIE_ID}}?api_key={{TMDB_API_KEY}}&language={{LANG}}
+```
+
+### 🎭 Movie Credits
+```
+GET {{TMDB_BASE_URL}}/movie/{{MOVIE_ID}}/credits?api_key={{TMDB_API_KEY}}
+```
+
+### 🎬 Similar Movies
+```
+GET {{TMDB_BASE_URL}}/movie/{{MOVIE_ID}}/similar?api_key={{TMDB_API_KEY}}&language={{LANG}}
+```
+
+### 📺 Movie Videos (Trailers)
+```
+GET {{TMDB_BASE_URL}}/movie/{{MOVIE_ID}}/videos?api_key={{TMDB_API_KEY}}&language={{LANG}}
+```
+
+### 🖼️ Movie Images
+```
+GET {{TMDB_BASE_URL}}/movie/{{MOVIE_ID}}/images?api_key={{TMDB_API_KEY}}
+```
