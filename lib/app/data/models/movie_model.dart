@@ -21,7 +21,6 @@ class MovieModel {
     required this.genreIds,
   });
 
-  // Convert JSON to Model
   factory MovieModel.fromJson(Map<String, dynamic> json) {
     return MovieModel(
       id: json['id'] ?? 0,
