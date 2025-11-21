@@ -7,18 +7,30 @@ import 'package:template_project_flutter/widgets/rate.dart';
 
 class HomeCard extends StatelessWidget {
   final String imageUrl;
-  final String rate;
+  final String voteAverage;
+  final String title;
+  final String genreIds;
   final VoidCallback? onTap;
 
   const HomeCard({
     super.key,
     required this.imageUrl,
-    required this.rate,
+    required this.voteAverage,
+    required this.title,
+    required this.genreIds,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    String formattedRating = voteAverage;
+    try {
+      final double rating = double.parse(voteAverage);
+      formattedRating = rating.toStringAsFixed(1);
+    } catch (e) {
+      formattedRating = '0.0';
+    }
+
     return GestureDetector(
       onTap: onTap,
       child: ClipRRect(
@@ -26,12 +38,10 @@ class HomeCard extends StatelessWidget {
         child: Container(
           width: 135,
           height: 231,
-          decoration: BoxDecoration(
-            color: softColor,
-          ),
+          decoration: BoxDecoration(color: softColor),
           child: Stack(
             children: [
-              // Network Image dengan cache
+              // Image
               Positioned.fill(
                 child: CachedNetworkImage(
                   imageUrl: imageUrl,
@@ -44,19 +54,58 @@ class HomeCard extends StatelessWidget {
                   ),
                   errorWidget: (context, url, error) => Container(
                     color: softColor,
-                    child: Icon(
-                      Icons.movie,
-                      color: greyColor,
-                      size: 50,
-                    ),
+                    child: Icon(Icons.movie, color: greyColor, size: 50),
                   ),
                 ),
               ),
-              // Rating badge
+
+              // Rating
               Positioned(
                 top: 8,
                 right: 8,
-                child: CustomFillRate(number: rate),
+                child: CustomFillRate(number: formattedRating),
+              ),
+
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: darkColor,
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(16),
+                      bottomRight: Radius.circular(16),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: whiteTextStyle.copyWith(
+                          fontSize: 12,
+                          fontWeight: semiBold,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        genreIds,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: whiteTextStyle.copyWith(
+                          fontSize: 10,
+                          fontWeight: regular,
+                          color: greyColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
@@ -90,6 +139,14 @@ class SearchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String formattedRate = rate;
+    try {
+      final double ratingValue = double.parse(rate);
+      formattedRate = ratingValue.toStringAsFixed(1);
+    } catch (e) {
+      formattedRate = '0.0';
+    }
+
     return GestureDetector(
       onTap: onTap,
       child: Row(
@@ -104,9 +161,28 @@ class SearchCard extends StatelessWidget {
               child: Stack(
                 children: [
                   Positioned.fill(
-                    child: Image.asset(imageUrl, fit: BoxFit.cover),
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Center(
+                        child: CircularProgressIndicator(
+                          color: darkBlueAccent,
+                          strokeWidth: 2,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: softColor,
+                        child: Icon(Icons.movie, color: greyColor, size: 30),
+                      ),
+                    ),
                   ),
-                  Positioned(top: 8, left: 8, child: CustomFillRate(number: rate)),
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: CustomFillRate(
+                      number: formattedRate,
+                    ),
+                  ),
                 ],
               ),
             ),

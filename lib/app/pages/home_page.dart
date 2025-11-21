@@ -208,9 +208,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             GestureDetector(
-              onTap: () {
-                // TODO: Navigate to see all
-              },
+              onTap: () {},
               child: Text(
                 "See All",
                 style: darkBlueTextStyle.copyWith(
@@ -238,7 +236,12 @@ class _HomePageState extends State<HomePage> {
                     arguments: movie.id,
                   );
                 },
-                child: HomeCard(imageUrl: movie.posterUrl, rate: movie.rating),
+                child: HomeCard(
+                  imageUrl: movie.posterUrl,
+                  voteAverage: movie.voteAverage.toString(),
+                  title: movie.title,
+                  genreIds: movie.genreNames,
+                ),
               );
             },
           ),
