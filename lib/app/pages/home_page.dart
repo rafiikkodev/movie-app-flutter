@@ -5,6 +5,7 @@ import 'package:template_project_flutter/app/data/models/movie_model.dart';
 import 'package:template_project_flutter/app/data/repositories/movie_repository.dart';
 import 'package:template_project_flutter/widgets/home_card.dart';
 import 'package:template_project_flutter/widgets/home_carousel.dart';
+import 'package:template_project_flutter/widgets/home_genre_poster_list.dart';
 import 'package:template_project_flutter/widgets/inputs.dart';
 import 'package:template_project_flutter/widgets/toggle_buttons.dart';
 
@@ -21,6 +22,7 @@ class _HomePageState extends State<HomePage> {
 
   List<MovieModel> nowPlayingMovies = [];
   List<MovieModel> popularMovies = [];
+  String selectedGenre = 'All';
   bool isLoading = true;
   String errorMessage = '';
 
@@ -184,12 +186,59 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget buildCategories() {
-    return CategoryTabs(
-      categories: const ['All', 'Action', 'Comedy', 'Drama', 'Horror'],
-      initialIndex: 0,
-      onCategorySelected: (index, category) {
-        // TODO: Filter movies by category
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Genres",
+              style: whiteTextStyle.copyWith(
+                fontSize: 16,
+                fontWeight: semiBold,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 16),
+        CategoryTabs(
+          categories: const [
+            'All',
+            'Action',
+            'Adventure',
+            'Animation',
+            'Comedy',
+            'Crime',
+            'Documentary',
+            'Drama',
+            'Family',
+            'Fantasy',
+            'History',
+            'Horror',
+            'Music',
+            'Mystery',
+            'Romance',
+            'Sci-Fi',
+            'TV Movie',
+            'Thriller',
+            'War',
+            'Western',
+          ],
+          initialIndex: 0,
+          onCategorySelected: (index, category) {
+            setState(() {
+              selectedGenre = category;
+            });
+          },
+        ),
+        const SizedBox(height: 16),
+        GenrePosterList(
+          movies: nowPlayingMovies,
+          genre: selectedGenre,
+          onTap: () {},
+        ),
+      ],
     );
   }
 
@@ -205,16 +254,6 @@ class _HomePageState extends State<HomePage> {
               style: whiteTextStyle.copyWith(
                 fontSize: 16,
                 fontWeight: semiBold,
-              ),
-            ),
-            GestureDetector(
-              onTap: () {},
-              child: Text(
-                "See All",
-                style: darkBlueTextStyle.copyWith(
-                  fontSize: 14,
-                  fontWeight: medium,
-                ),
               ),
             ),
           ],
