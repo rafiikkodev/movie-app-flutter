@@ -8,6 +8,7 @@ class WishlistCard extends StatelessWidget {
   final String genre;
   final String title;
   final String rate;
+  final VoidCallback? onTap;
 
   const WishlistCard({
     super.key,
@@ -15,68 +16,72 @@ class WishlistCard extends StatelessWidget {
     required this.genre,
     required this.title,
     required this.rate,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: softColor,
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              imageUrl,
-              width: 121,
-              height: 83,
-              fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: softColor,
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.asset(
+                imageUrl,
+                width: 121,
+                height: 83,
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  genre,
-                  style: whiteTextStyle.copyWith(
-                    fontWeight: medium,
-                    fontSize: 12,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  title,
-                  style: whiteTextStyle.copyWith(
-                    fontWeight: semiBold,
-                    fontSize: 16,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    CustomTextRate(number: rate),
-                    SvgPicture.asset(
-                      'assets/icons-blue-accent/heart.svg',
-                      width: 24,
-                      height: 24,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    genre,
+                    style: whiteTextStyle.copyWith(
+                      fontWeight: medium,
+                      fontSize: 12,
                     ),
-                  ],
-                ),
-              ],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    title,
+                    style: whiteTextStyle.copyWith(
+                      fontWeight: semiBold,
+                      fontSize: 16,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CustomTextRate(number: rate),
+                      SvgPicture.asset(
+                        'assets/icons-blue-accent/heart.svg',
+                        width: 24,
+                        height: 24,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

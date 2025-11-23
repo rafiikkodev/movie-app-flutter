@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/pages/download_page.dart';
-import 'package:template_project_flutter/app/pages/movie_detail_page.dart';
 import 'package:template_project_flutter/app/pages/onboarding_page.dart';
 import 'package:template_project_flutter/app/pages/home_page.dart';
 import 'package:template_project_flutter/app/pages/profile_page.dart';
@@ -48,7 +47,7 @@ class MyApp extends StatelessWidget {
         "/search": (context) => const SearchPage(),
         "/search_result": (context) => const SearchResultPage(),
         "/search_by_actor": (context) => const SearchByActorPage(),
-        "/movie_detail": (context) => const MovieDetailPage(),
+        // "/movie_detail": (context) => const MovieDetailPage(),
         "/download": (context) => const DownloadPage(),
         "/wishlist": (context) => const WishlistPage(),
         "/profile": (context) => const ProfilePage(),

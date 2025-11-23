@@ -1,3 +1,5 @@
+// melakukan req ke API TMDB (data source)
+
 import 'package:dio/dio.dart';
 import 'package:template_project_flutter/app/core/config/api_config.dart';
 import 'package:template_project_flutter/app/data/models/movie_model.dart';
@@ -109,16 +111,38 @@ class MovieProvider {
     try {
       final response = await _dio.get(
         '${ApiConfig.movieDetail}/$movieId',
-        queryParameters: {
-          'api_key': ApiConfig.apiKey,
-          'language': 'en-US',
-        },
+        queryParameters: {'api_key': ApiConfig.apiKey, 'language': 'en-US'},
       );
 
       if (response.statusCode == 200) {
         return MovieModel.fromJson(response.data);
       } else {
         throw Exception('Failed to load movie detail');
+      }
+    } on DioException catch (e) {
+      throw Exception('Network error: ${e.message}');
+    }
+  }
+
+  // Get Similar Movies
+  Future<MovieListResponse> getSimilarMovies(
+    int movieId, {
+    int page = 1,
+  }) async {
+    try {
+      final response = await _dio.get(
+        '/movie/$movieId/similar',
+        queryParameters: {
+          'api_key': ApiConfig.apiKey,
+          'language': 'en-US',
+          'page': page,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return MovieListResponse.fromJson(response.data);
+      } else {
+        throw Exception('Failed to load similar movies');
       }
     } on DioException catch (e) {
       throw Exception('Network error: ${e.message}');

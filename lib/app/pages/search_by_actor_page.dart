@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
+import 'package:template_project_flutter/app/data/models/movie_model.dart';
 import 'package:template_project_flutter/app/pages/movie_detail_page.dart';
 import 'package:template_project_flutter/widgets/home_card.dart';
 
@@ -27,12 +28,13 @@ class _SearchByActorPageState extends State<SearchByActorPage> {
           InkWell(
             borderRadius: BorderRadius.circular(56),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const MovieDetailPage(),
-                ),
-              );
+              // TODO: Implement search functionality
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => MovieDetailPage(movie: movieModel),
+              //   ),
+              // );
             },
             child: Container(
               height: 40,
@@ -186,10 +188,21 @@ class _SearchByActorPageState extends State<SearchByActorPage> {
                 genre: 'genre',
                 rate: "rate",
                 onTap: () {
+                  // TODO: Pass real movie data when available
+                  // Create dummy movie for now
+                  final dummyMovie = MovieModel(
+                    id: 1,
+                    title: "title",
+                    overview: "No overview available",
+                    voteAverage: 0.0,
+                    releaseDate: "year",
+                    genreIds: [],
+                  );
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const MovieDetailPage(),
+                      builder: (context) => MovieDetailPage(movie: dummyMovie),
                     ),
                   );
                 },
@@ -203,6 +216,22 @@ class _SearchByActorPageState extends State<SearchByActorPage> {
                 rating: "rating",
                 genre: 'genre',
                 rate: "rate",
+                onTap: () {
+                  final dummyMovie = MovieModel(
+                    id: 3,
+                    title: "title",
+                    overview: "No overview available",
+                    voteAverage: 0.0,
+                    releaseDate: "year",
+                    genreIds: [],
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MovieDetailPage(movie: dummyMovie),
+                    ),
+                  );
+                },
               ),
               SizedBox(height: 16),
               SearchCard(
@@ -213,6 +242,22 @@ class _SearchByActorPageState extends State<SearchByActorPage> {
                 rating: "rating",
                 genre: 'genre',
                 rate: "rate",
+                onTap: () {
+                  final dummyMovie = MovieModel(
+                    id: 4,
+                    title: "title",
+                    overview: "No overview available",
+                    voteAverage: 0.0,
+                    releaseDate: "year",
+                    genreIds: [],
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MovieDetailPage(movie: dummyMovie),
+                    ),
+                  );
+                },
               ),
               SizedBox(height: 16),
               SearchCard(
@@ -223,6 +268,22 @@ class _SearchByActorPageState extends State<SearchByActorPage> {
                 rating: "rating",
                 genre: 'genre',
                 rate: "rate",
+                onTap: () {
+                  final dummyMovie = MovieModel(
+                    id: 5,
+                    title: "title",
+                    overview: "No overview available",
+                    voteAverage: 0.0,
+                    releaseDate: "year",
+                    genreIds: [],
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MovieDetailPage(movie: dummyMovie),
+                    ),
+                  );
+                },
               ),
               SizedBox(height: 16),
               SearchCard(
@@ -233,6 +294,22 @@ class _SearchByActorPageState extends State<SearchByActorPage> {
                 rating: "rating",
                 genre: 'genre',
                 rate: "rate",
+                onTap: () {
+                  final dummyMovie = MovieModel(
+                    id: 6,
+                    title: "title",
+                    overview: "No overview available",
+                    voteAverage: 0.0,
+                    releaseDate: "year",
+                    genreIds: [],
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MovieDetailPage(movie: dummyMovie),
+                    ),
+                  );
+                },
               ),
               SizedBox(height: 16),
               SearchCard(
@@ -243,6 +320,22 @@ class _SearchByActorPageState extends State<SearchByActorPage> {
                 rating: "rating",
                 genre: 'genre',
                 rate: "rate",
+                onTap: () {
+                  final dummyMovie = MovieModel(
+                    id: 7,
+                    title: "title",
+                    overview: "No overview available",
+                    voteAverage: 0.0,
+                    releaseDate: "year",
+                    genreIds: [],
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MovieDetailPage(movie: dummyMovie),
+                    ),
+                  );
+                },
               ),
               SizedBox(height: 16),
               SearchCard(
@@ -253,6 +346,22 @@ class _SearchByActorPageState extends State<SearchByActorPage> {
                 rating: "rating",
                 genre: 'genre',
                 rate: "rate",
+                onTap: () {
+                  final dummyMovie = MovieModel(
+                    id: 8,
+                    title: "title",
+                    overview: "No overview available",
+                    voteAverage: 0.0,
+                    releaseDate: "year",
+                    genreIds: [],
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MovieDetailPage(movie: dummyMovie),
+                    ),
+                  );
+                },
               ),
             ],
           ),

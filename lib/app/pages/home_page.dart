@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/data/models/movie_model.dart';
 import 'package:template_project_flutter/app/data/repositories/movie_repository.dart';
+import 'package:template_project_flutter/app/pages/movie_detail_page.dart';
 import 'package:template_project_flutter/widgets/home_card.dart';
 import 'package:template_project_flutter/widgets/home_carousel.dart';
 import 'package:template_project_flutter/widgets/home_genre_poster_list.dart';
@@ -112,6 +113,14 @@ class _HomePageState extends State<HomePage> {
                     imageUrl: movie.backdropUrl,
                     title: movie.title,
                     subtitle: 'Released: ${movie.releaseDate}',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MovieDetailPage(movie: movie),
+                        ),
+                      );
+                    },
                   );
                 }).toList(),
                 initialPage: 1,
@@ -236,7 +245,14 @@ class _HomePageState extends State<HomePage> {
         GenrePosterList(
           movies: nowPlayingMovies,
           genre: selectedGenre,
-          onTap: () {},
+          onMovieTap: (movie) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MovieDetailPage(movie: movie),
+              ),
+            );
+          },
         ),
       ],
     );
@@ -269,10 +285,11 @@ class _HomePageState extends State<HomePage> {
               final movie = popularMovies[index];
               return GestureDetector(
                 onTap: () {
-                  Navigator.pushNamed(
+                  Navigator.push(
                     context,
-                    "/movie_detail",
-                    arguments: movie.id,
+                    MaterialPageRoute(
+                      builder: (context) => MovieDetailPage(movie: movie),
+                    ),
                   );
                 },
                 child: HomeCard(

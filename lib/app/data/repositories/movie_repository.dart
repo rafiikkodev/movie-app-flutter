@@ -1,3 +1,5 @@
+// mengelola data dari provider (gabung, proses, chaching) | sebagai jembatan antara provider(API) dan UI
+
 import 'package:template_project_flutter/app/data/models/movie_model.dart';
 import 'package:template_project_flutter/app/data/providers/movie_provider.dart';
 
@@ -48,6 +50,16 @@ class MovieRepository {
   Future<MovieModel> getMovieDetail(int movieId) async {
     try {
       return await _provider.getMovieDetail(movieId);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Get Similar Movies
+  Future<List<MovieModel>> getSimilarMovies(int movieId, {int page = 1}) async {
+    try {
+      final response = await _provider.getSimilarMovies(movieId, page: page);
+      return response.results;
     } catch (e) {
       rethrow;
     }

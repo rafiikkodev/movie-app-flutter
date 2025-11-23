@@ -7,13 +7,13 @@ import 'package:template_project_flutter/widgets/rate.dart';
 class GenrePosterList extends StatelessWidget {
   final List<MovieModel> movies;
   final String genre;
-  final VoidCallback? onTap;
+  final Function(MovieModel)? onMovieTap;
 
   const GenrePosterList({
     super.key,
     required this.movies,
     required this.genre,
-    this.onTap,
+    this.onMovieTap,
   });
 
   @override
@@ -55,7 +55,7 @@ class GenrePosterList extends StatelessWidget {
           }
 
           return GestureDetector(
-            onTap: onTap,
+            onTap: () => onMovieTap?.call(movie),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: Container(

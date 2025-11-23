@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
+import 'package:template_project_flutter/app/data/models/movie_model.dart';
+import 'package:template_project_flutter/app/data/models/cast_crew_model.dart';
+import 'package:template_project_flutter/app/data/repositories/movie_repository.dart';
+import 'package:template_project_flutter/app/data/repositories/cast_crew_repository.dart';
 import 'package:template_project_flutter/widgets/buttons.dart';
 import 'package:template_project_flutter/widgets/rate.dart';
 import 'package:template_project_flutter/widgets/app_bar.dart';
+import 'package:template_project_flutter/widgets/home_card.dart';
 
 class MovieDetailPage extends StatefulWidget {
-  const MovieDetailPage({super.key});
+  final MovieModel movie;
+
+  const MovieDetailPage({super.key, required this.movie});
 
   @override
   State<MovieDetailPage> createState() => _MovieDetailPageState();
@@ -13,13 +20,47 @@ class MovieDetailPage extends StatefulWidget {
 
 class _MovieDetailPageState extends State<MovieDetailPage> {
   final ScrollController _scrollController = ScrollController();
+  final MovieRepository _movieRepository = MovieRepository();
+  final CastCrewRepository _castCrewRepository = CastCrewRepository();
+
   double _scrollOffset = 0.0;
   bool _isFavorite = false;
+  bool _isLoading = true;
+
+  List<CastModel> _cast = [];
+  List<MovieModel> _similarMovies = [];
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    _loadMovieDetails();
+  }
+
+  Future<void> _loadMovieDetails() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      // Load cast dan similar movies secara paralel
+      final results = await Future.wait([
+        _castCrewRepository.getTopCast(widget.movie.id, limit: 10),
+        _movieRepository.getSimilarMovies(widget.movie.id),
+      ]);
+
+      setState(() {
+        _cast = results[0] as List<CastModel>;
+        _similarMovies = results[1] as List<MovieModel>;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      // TODO: Show error snackbar or dialog
+      debugPrint('Error loading movie details: $e');
+    }
   }
 
   @override
@@ -63,9 +104,13 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       right: 0,
       child: Container(
         height: 400,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/card.png'),
+            image:
+                widget.movie.backdropPath != null &&
+                    widget.movie.backdropPath!.isNotEmpty
+                ? NetworkImage(widget.movie.backdropUrl)
+                : const AssetImage('assets/images/card.png') as ImageProvider,
             fit: BoxFit.cover,
           ),
         ),
@@ -116,15 +161,18 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _MovieHeader(),
+                _MovieHeader(movie: widget.movie),
                 const SizedBox(height: 24),
-                _ActionButtons(),
+                const _ActionButtons(),
                 const SizedBox(height: 24),
-                _SynopsisSection(),
+                _SynopsisSection(overview: widget.movie.overview),
                 const SizedBox(height: 24),
-                _CastSection(),
+                _CastSection(cast: _cast, isLoading: _isLoading),
                 const SizedBox(height: 24),
-                _SimilarMoviesSection(),
+                _SimilarMoviesSection(
+                  movies: _similarMovies,
+                  isLoading: _isLoading,
+                ),
                 const SizedBox(height: 24),
               ],
             ),
@@ -136,7 +184,9 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
 }
 
 class _MovieHeader extends StatelessWidget {
-  const _MovieHeader();
+  final MovieModel movie;
+
+  const _MovieHeader({required this.movie});
 
   @override
   Widget build(BuildContext context) {
@@ -145,30 +195,43 @@ class _MovieHeader extends StatelessWidget {
       children: [
         Center(
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(
-              12,
-            ),
-            child: Image.asset(
-              "assets/images/card2.png",
-              height: 287,
-              fit: BoxFit.cover,
-            ),
+            borderRadius: BorderRadius.circular(12),
+            child: movie.posterPath != null && movie.posterPath!.isNotEmpty
+                ? Image.network(
+                    movie.posterUrl,
+                    height: 287,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        height: 287,
+                        color: darkGreyColor,
+                        child: Icon(Icons.movie, size: 80, color: greyColor),
+                      );
+                    },
+                  )
+                : Container(
+                    height: 287,
+                    color: darkGreyColor,
+                    child: Icon(Icons.movie, size: 80, color: greyColor),
+                  ),
           ),
         ),
-
         const SizedBox(height: 52),
-        _TitleAndRating(),
+        _TitleAndRating(title: movie.title, rating: movie.rating),
         const SizedBox(height: 16),
-        _MovieInfo(),
+        _MovieInfo(year: movie.year),
         const SizedBox(height: 16),
-        _Genres(),
+        _Genres(genres: movie.genreNames),
       ],
     );
   }
 }
 
 class _TitleAndRating extends StatelessWidget {
-  const _TitleAndRating();
+  final String title;
+  final String rating;
+
+  const _TitleAndRating({required this.title, required this.rating});
 
   @override
   Widget build(BuildContext context) {
@@ -177,29 +240,31 @@ class _TitleAndRating extends StatelessWidget {
       children: [
         Expanded(
           child: Text(
-            'Spider-Man: No Way Home',
+            title,
             style: whiteTextStyle.copyWith(fontSize: 24, fontWeight: semiBold),
           ),
         ),
         const SizedBox(width: 12),
-        const CustomFillRate(number: '4.8'),
+        CustomFillRate(number: rating),
       ],
     );
   }
 }
 
 class _MovieInfo extends StatelessWidget {
-  const _MovieInfo();
+  final String year;
+
+  const _MovieInfo({required this.year});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _InfoText('2021'),
-        _DotSeparator(),
-        _InfoText('148 Minutes'),
-        _DotSeparator(),
-        _RatingBadge('PG-13'),
+        _InfoText(year.isNotEmpty ? year : 'N/A'),
+        const _DotSeparator(),
+        const _InfoText('Movie'),
+        const _DotSeparator(),
+        const _RatingBadge('PG-13'),
       ],
     );
   }
@@ -255,12 +320,14 @@ class _RatingBadge extends StatelessWidget {
 }
 
 class _Genres extends StatelessWidget {
-  const _Genres();
+  final String genres;
+
+  const _Genres({required this.genres});
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      'Action • Adventure • Fantasy',
+      genres,
       style: greyTextStyle.copyWith(fontSize: 14, fontWeight: medium),
     );
   }
@@ -296,17 +363,19 @@ class _ActionButtons extends StatelessWidget {
 }
 
 class _SynopsisSection extends StatelessWidget {
-  const _SynopsisSection();
+  final String overview;
+
+  const _SynopsisSection({required this.overview});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle('Synopsis'),
+        const _SectionTitle('Synopsis'),
         const SizedBox(height: 12),
         Text(
-          'Peter Parker is unmasked and no longer able to separate his normal life from the high-stakes of being a super-hero. When he asks for help from Doctor Strange the stakes become even more dangerous, forcing him to discover what it truly means to be Spider-Man.',
+          overview.isNotEmpty ? overview : 'No synopsis available.',
           style: greyTextStyle.copyWith(
             fontSize: 14,
             fontWeight: medium,
@@ -319,26 +388,39 @@ class _SynopsisSection extends StatelessWidget {
 }
 
 class _CastSection extends StatelessWidget {
-  const _CastSection();
+  final List<CastModel> cast;
+  final bool isLoading;
+
+  const _CastSection({required this.cast, required this.isLoading});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle('Cast'),
+        const _SectionTitle('Cast'),
         const SizedBox(height: 16),
         SizedBox(
           height: 120,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: 5,
-            separatorBuilder: (context, index) => const SizedBox(width: 12),
-            itemBuilder: (context, index) => const _CastItem(
-              name: 'Tom Holland',
-              imageUrl: 'assets/images/ic-profile-image.png',
-            ),
-          ),
+          child: isLoading
+              ? Center(child: CircularProgressIndicator(color: darkBlueAccent))
+              : cast.isEmpty
+              ? Center(
+                  child: Text(
+                    'No cast information available',
+                    style: greyTextStyle.copyWith(
+                      fontSize: 14,
+                      fontWeight: medium,
+                    ),
+                  ),
+                )
+              : ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: cast.length,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: 12),
+                  itemBuilder: (context, index) => _CastItem(cast: cast[index]),
+                ),
         ),
       ],
     );
@@ -346,10 +428,9 @@ class _CastSection extends StatelessWidget {
 }
 
 class _CastItem extends StatelessWidget {
-  final String name;
-  final String imageUrl;
+  final CastModel cast;
 
-  const _CastItem({required this.name, required this.imageUrl});
+  const _CastItem({required this.cast});
 
   @override
   Widget build(BuildContext context) {
@@ -360,20 +441,28 @@ class _CastItem extends StatelessWidget {
           height: 80,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            image: DecorationImage(
-              image: AssetImage(imageUrl),
-              fit: BoxFit.cover,
-            ),
+            color: darkGreyColor,
+          ),
+          child: ClipOval(
+            child: cast.hasProfile
+                ? Image.network(
+                    cast.profileUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Icon(Icons.person, size: 40, color: greyColor);
+                    },
+                  )
+                : Icon(Icons.person, size: 40, color: greyColor),
           ),
         ),
         const SizedBox(height: 8),
         SizedBox(
           width: 80,
           child: Text(
-            name,
+            cast.name,
             style: whiteTextStyle.copyWith(fontSize: 12, fontWeight: medium),
             textAlign: TextAlign.center,
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -383,26 +472,40 @@ class _CastItem extends StatelessWidget {
 }
 
 class _SimilarMoviesSection extends StatelessWidget {
-  const _SimilarMoviesSection();
+  final List<MovieModel> movies;
+  final bool isLoading;
+
+  const _SimilarMoviesSection({required this.movies, required this.isLoading});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle('Similar Movies'),
+        const _SectionTitle('Similar Movies'),
         const SizedBox(height: 16),
         SizedBox(
-          height: 200,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: 5,
-            separatorBuilder: (context, index) => const SizedBox(width: 12),
-            itemBuilder: (context, index) => const _SimilarMovieItem(
-              imageUrl: 'assets/images/card1.png',
-              rate: '4.5',
-            ),
-          ),
+          height: 231,
+          child: isLoading
+              ? Center(child: CircularProgressIndicator(color: darkBlueAccent))
+              : movies.isEmpty
+              ? Center(
+                  child: Text(
+                    'No similar movies found',
+                    style: greyTextStyle.copyWith(
+                      fontSize: 14,
+                      fontWeight: medium,
+                    ),
+                  ),
+                )
+              : ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: movies.length,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: 12),
+                  itemBuilder: (context, index) =>
+                      _SimilarMovieItem(movie: movies[index]),
+                ),
         ),
       ],
     );
@@ -410,20 +513,26 @@ class _SimilarMoviesSection extends StatelessWidget {
 }
 
 class _SimilarMovieItem extends StatelessWidget {
-  final String imageUrl;
-  final String rate;
+  final MovieModel movie;
 
-  const _SimilarMovieItem({required this.imageUrl, required this.rate});
+  const _SimilarMovieItem({required this.movie});
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: Stack(
-        children: [
-          Image.asset(imageUrl, width: 135, height: 200, fit: BoxFit.cover),
-          Positioned(top: 8, right: 8, child: CustomFillRate(number: rate)),
-        ],
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MovieDetailPage(movie: movie),
+          ),
+        );
+      },
+      child: HomeCard(
+        imageUrl: movie.posterUrl,
+        voteAverage: movie.voteAverage.toString(),
+        title: movie.title,
+        genreIds: movie.genreNames,
       ),
     );
   }

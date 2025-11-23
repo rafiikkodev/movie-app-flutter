@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
+import 'package:template_project_flutter/app/data/models/movie_model.dart';
+import 'package:template_project_flutter/app/pages/movie_detail_page.dart';
 import 'package:template_project_flutter/app/pages/search_by_actor_page.dart';
 import 'package:template_project_flutter/widgets/home_card.dart';
 
@@ -73,77 +75,39 @@ class _SearchResultPageState extends State<SearchResultPage> {
         SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
-            children: [
-              SearchCard(
-                imageUrl: "assets/images/card.png",
-                title: "title",
-                year: "year",
-                duration: "duration",
-                rating: "rating",
-                genre: 'genre',
-                rate: "rate",
-              ),
-              SizedBox(height: 16),
-              SearchCard(
-                imageUrl: "assets/images/card.png",
-                title: "title",
-                year: "year",
-                duration: "duration",
-                rating: "rating",
-                genre: 'genre',
-                rate: "rate",
-              ),
-              SizedBox(height: 16),
-              SearchCard(
-                imageUrl: "assets/images/card.png",
-                title: "title",
-                year: "year",
-                duration: "duration",
-                rating: "rating",
-                genre: 'genre',
-                rate: "rate",
-              ),
-              SizedBox(height: 16),
-              SearchCard(
-                imageUrl: "assets/images/card.png",
-                title: "title",
-                year: "year",
-                duration: "duration",
-                rating: "rating",
-                genre: 'genre',
-                rate: "rate",
-              ),
-              SizedBox(height: 16),
-              SearchCard(
-                imageUrl: "assets/images/card.png",
-                title: "title",
-                year: "year",
-                duration: "duration",
-                rating: "rating",
-                genre: 'genre',
-                rate: "rate",
-              ),
-              SizedBox(height: 16),
-              SearchCard(
-                imageUrl: "assets/images/card.png",
-                title: "title",
-                year: "year",
-                duration: "duration",
-                rating: "rating",
-                genre: 'genre',
-                rate: "rate",
-              ),
-              SizedBox(height: 16),
-              SearchCard(
-                imageUrl: "assets/images/card.png",
-                title: "title",
-                year: "year",
-                duration: "duration",
-                rating: "rating",
-                genre: 'genre',
-                rate: "rate",
-              ),
-            ],
+            children: List.generate(7, (index) {
+              return Padding(
+                padding: EdgeInsets.only(bottom: index < 6 ? 16 : 0),
+                child: SearchCard(
+                  imageUrl: "assets/images/card.png",
+                  title: "title",
+                  year: "year",
+                  duration: "duration",
+                  rating: "rating",
+                  genre: 'genre',
+                  rate: "rate",
+                  onTap: () {
+                    // TODO: Pass real movie data when search is implemented
+                    final dummyMovie = MovieModel(
+                      id: index + 1,
+                      title: "title",
+                      overview: "No overview available",
+                      voteAverage: 0.0,
+                      releaseDate: "year",
+                      genreIds: [],
+                    );
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            MovieDetailPage(movie: dummyMovie),
+                      ),
+                    );
+                  },
+                ),
+              );
+            }),
           ),
         ),
       ],

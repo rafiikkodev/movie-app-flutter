@@ -7,11 +7,13 @@ class HomeCarouselItem {
   final String imageUrl;
   final String title;
   final String subtitle;
+  final VoidCallback? onTap;
 
   const HomeCarouselItem({
     required this.imageUrl,
     required this.title,
     required this.subtitle,
+    this.onTap,
   });
 }
 
@@ -42,84 +44,87 @@ class _HomeCarouselState extends State<HomeCarousel> {
           items: widget.items.map((item) {
             return Builder(
               builder: (BuildContext context) {
-                return Container(
-                  width: MediaQuery.of(context).size.width,
-                  margin: const EdgeInsets.symmetric(horizontal: 5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Stack(
-                      children: [
-                        // Background image
-                        Positioned.fill(
-                          child: CachedNetworkImage(
-                            imageUrl: item.imageUrl,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(
-                              color: softColor,
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  color: darkBlueAccent,
+                return GestureDetector(
+                  onTap: item.onTap,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    margin: const EdgeInsets.symmetric(horizontal: 5),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Stack(
+                        children: [
+                          // Background image
+                          Positioned.fill(
+                            child: CachedNetworkImage(
+                              imageUrl: item.imageUrl,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Container(
+                                color: softColor,
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    color: darkBlueAccent,
+                                  ),
+                                ),
+                              ),
+                              errorWidget: (context, url, error) => Container(
+                                color: softColor,
+                                child: Icon(
+                                  Icons.movie,
+                                  color: greyColor,
+                                  size: 80,
                                 ),
                               ),
                             ),
-                            errorWidget: (context, url, error) => Container(
-                              color: softColor,
-                              child: Icon(
-                                Icons.movie,
-                                color: greyColor,
-                                size: 80,
+                          ),
+                          // Gradient overlay
+                          Positioned.fill(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.transparent,
+                                    Colors.black.withOpacity(0.7),
+                                  ],
+                                  stops: const [0.5, 1.0],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        // Gradient overlay
-                        Positioned.fill(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.transparent,
-                                  Colors.black.withOpacity(0.7),
-                                ],
-                                stops: const [0.5, 1.0],
-                              ),
+                          // Content
+                          Positioned(
+                            bottom: 20,
+                            left: 20,
+                            right: 20,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.title,
+                                  style: whiteTextStyle.copyWith(
+                                    fontSize: 18,
+                                    fontWeight: semiBold,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  item.subtitle,
+                                  style: greyTextStyle.copyWith(
+                                    fontSize: 12,
+                                    fontWeight: medium,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                        // Content
-                        Positioned(
-                          bottom: 20,
-                          left: 20,
-                          right: 20,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.title,
-                                style: whiteTextStyle.copyWith(
-                                  fontSize: 18,
-                                  fontWeight: semiBold,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                item.subtitle,
-                                style: greyTextStyle.copyWith(
-                                  fontSize: 12,
-                                  fontWeight: medium,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 );

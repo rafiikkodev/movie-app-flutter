@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:template_project_flutter/app/data/models/movie_model.dart';
+import 'package:template_project_flutter/app/pages/movie_detail_page.dart';
 import 'package:template_project_flutter/widgets/app_bar.dart';
 import 'package:template_project_flutter/widgets/wishlist_card.dart';
 
@@ -26,6 +28,25 @@ class _WishlistPageState extends State<WishlistPage> {
                   genre: "Action • Adventure",
                   title: "Spider-Man: No Way Home",
                   rate: "4.8",
+                  onTap: () {
+                    // TODO: Pass real movie data when wishlist feature is implemented
+                    final dummyMovie = MovieModel(
+                      id: index + 1,
+                      title: "Spider-Man: No Way Home",
+                      overview: "No overview available",
+                      voteAverage: 4.8,
+                      releaseDate: "2021-12-12",
+                      genreIds: [28, 12],
+                    );
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            MovieDetailPage(movie: dummyMovie),
+                      ),
+                    );
+                  },
                 ),
               );
             }, childCount: 10),
