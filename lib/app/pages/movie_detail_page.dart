@@ -263,8 +263,6 @@ class _MovieInfo extends StatelessWidget {
         _InfoText(year.isNotEmpty ? year : 'N/A'),
         const _DotSeparator(),
         const _InfoText('Movie'),
-        const _DotSeparator(),
-        const _RatingBadge('PG-13'),
       ],
     );
   }
@@ -298,27 +296,6 @@ class _DotSeparator extends StatelessWidget {
   }
 }
 
-class _RatingBadge extends StatelessWidget {
-  final String rating;
-
-  const _RatingBadge(this.rating);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        border: Border.all(color: darkBlueAccent, width: 1),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        rating,
-        style: darkBlueTextStyle.copyWith(fontSize: 12, fontWeight: medium),
-      ),
-    );
-  }
-}
-
 class _Genres extends StatelessWidget {
   final String genres;
 
@@ -342,16 +319,7 @@ class _ActionButtons extends StatelessWidget {
       children: [
         Expanded(
           child: CustomButton.primary(
-            title: 'Play',
-            width: double.infinity,
-            fontSize: 16,
-            onPressed: () {},
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: CustomButton.outlined(
-            title: 'Download',
+            title: 'Trailer',
             width: double.infinity,
             fontSize: 16,
             onPressed: () {},
