@@ -4,6 +4,7 @@ import 'package:template_project_flutter/app/data/models/movie_model.dart';
 import 'package:template_project_flutter/app/data/models/cast_crew_model.dart';
 import 'package:template_project_flutter/app/data/repositories/movie_repository.dart';
 import 'package:template_project_flutter/app/data/repositories/cast_crew_repository.dart';
+import 'package:template_project_flutter/app/pages/trailer_page.dart';
 import 'package:template_project_flutter/widgets/buttons.dart';
 import 'package:template_project_flutter/widgets/rate.dart';
 import 'package:template_project_flutter/widgets/app_bar.dart';
@@ -163,7 +164,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
               children: [
                 _MovieHeader(movie: widget.movie),
                 const SizedBox(height: 24),
-                const _ActionButtons(),
+                _ActionButtons(movie: widget.movie),
                 const SizedBox(height: 24),
                 _SynopsisSection(overview: widget.movie.overview),
                 const SizedBox(height: 24),
@@ -311,7 +312,9 @@ class _Genres extends StatelessWidget {
 }
 
 class _ActionButtons extends StatelessWidget {
-  const _ActionButtons();
+  final MovieModel movie;
+
+  const _ActionButtons({required this.movie});
 
   @override
   Widget build(BuildContext context) {
@@ -322,7 +325,14 @@ class _ActionButtons extends StatelessWidget {
             title: 'Trailer',
             width: double.infinity,
             fontSize: 16,
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TrailerPage(movie: movie),
+                ),
+              );
+            },
           ),
         ),
       ],

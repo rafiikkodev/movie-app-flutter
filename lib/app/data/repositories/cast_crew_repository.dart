@@ -34,4 +34,14 @@ class CastCrewRepository {
       rethrow;
     }
   }
+
+  // Get All Crew
+  Future<List<CrewModel>> getCrew(int movieId) async {
+    try {
+      final credits = await _provider.getMovieCredits(movieId);
+      return credits.crew;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

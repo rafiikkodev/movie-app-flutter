@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
+import 'package:template_project_flutter/app/data/models/movie_model.dart';
 import 'package:template_project_flutter/app/pages/download_page.dart';
 import 'package:template_project_flutter/app/pages/onboarding_page.dart';
 import 'package:template_project_flutter/app/pages/home_page.dart';
@@ -8,6 +9,7 @@ import 'package:template_project_flutter/app/pages/profile_page.dart';
 import 'package:template_project_flutter/app/pages/search_by_actor_page.dart';
 import 'package:template_project_flutter/app/pages/search_page.dart';
 import 'package:template_project_flutter/app/pages/search_result_page.dart';
+import 'package:template_project_flutter/app/pages/trailer_page.dart';
 import 'package:template_project_flutter/app/pages/wishlist_page.dart';
 import 'package:template_project_flutter/widgets/navbar.dart';
 
@@ -47,10 +49,18 @@ class MyApp extends StatelessWidget {
         "/search": (context) => const SearchPage(),
         "/search_result": (context) => const SearchResultPage(),
         "/search_by_actor": (context) => const SearchByActorPage(),
-        // "/movie_detail": (context) => const MovieDetailPage(),
         "/download": (context) => const DownloadPage(),
         "/wishlist": (context) => const WishlistPage(),
         "/profile": (context) => const ProfilePage(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/trailer') {
+          final movie = settings.arguments as MovieModel;
+          return MaterialPageRoute(
+            builder: (context) => TrailerPage(movie: movie),
+          );
+        }
+        return null;
       },
     );
   }
