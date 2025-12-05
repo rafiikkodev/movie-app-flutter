@@ -83,6 +83,28 @@ class MovieProvider {
     }
   }
 
+  // Get Upcoming Movies
+  Future<MovieListResponse> getUpcomingMovies({int page = 1}) async {
+    try {
+      final response = await _dio.get(
+        ApiConfig.upcomingMovies,
+        queryParameters: {
+          'api_key': ApiConfig.apiKey,
+          'language': 'en-US',
+          'page': page,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return MovieListResponse.fromJson(response.data);
+      } else {
+        throw Exception('Failed to load upcoming movies');
+      }
+    } on DioException catch (e) {
+      throw Exception('Network error: ${e.message}');
+    }
+  }
+
   // Search Movies
   Future<MovieListResponse> searchMovies(String query, {int page = 1}) async {
     try {

@@ -36,6 +36,16 @@ class MovieRepository {
     }
   }
 
+  // Get Upcoming Movies
+  Future<List<MovieModel>> getUpcomingMovies({int page = 1}) async {
+    try {
+      final response = await _provider.getUpcomingMovies(page: page);
+      return response.results;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // Search Movies
   Future<List<MovieModel>> searchMovies(String query, {int page = 1}) async {
     try {
