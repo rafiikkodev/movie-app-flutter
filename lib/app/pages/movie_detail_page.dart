@@ -5,6 +5,7 @@ import 'package:template_project_flutter/app/data/models/cast_crew_model.dart';
 import 'package:template_project_flutter/app/data/repositories/movie_repository.dart';
 import 'package:template_project_flutter/app/data/repositories/cast_crew_repository.dart';
 import 'package:template_project_flutter/app/pages/trailer_page.dart';
+import 'package:template_project_flutter/app/services/favorite_service.dart';
 import 'package:template_project_flutter/widgets/buttons.dart';
 import 'package:template_project_flutter/widgets/rate.dart';
 import 'package:template_project_flutter/widgets/app_bar.dart';
@@ -23,6 +24,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   final ScrollController _scrollController = ScrollController();
   final MovieRepository _movieRepository = MovieRepository();
   final CastCrewRepository _castCrewRepository = CastCrewRepository();
+  final FavoriteService _favoriteService = FavoriteService();
 
   double _scrollOffset = 0.0;
   bool _isFavorite = false;
@@ -36,6 +38,14 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     super.initState();
     _scrollController.addListener(_onScroll);
     _loadMovieDetails();
+    _checkFavoriteStatus();
+  }
+
+  Future<void> _checkFavoriteStatus() async {
+    final isFav = await _favoriteService.isFavorite(widget.movie.id);
+    setState(() {
+      _isFavorite = isFav;
+    });
   }
 
   Future<void> _loadMovieDetails() async {
@@ -77,10 +87,22 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     });
   }
 
-  void _toggleFavorite() {
-    setState(() {
-      _isFavorite = !_isFavorite;
-    });
+  Future<void> _toggleFavorite() async {
+    await _favoriteService.toggleFavorite(widget.movie);
+    await _checkFavoriteStatus();
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            _isFavorite ? 'Added to favorites' : 'Removed from favorites',
+            style: whiteTextStyle.copyWith(fontSize: 14),
+          ),
+          backgroundColor: darkBlueAccent,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   double get _overlayOpacity => (_scrollOffset / 200).clamp(0.0, 1.0);
