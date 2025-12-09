@@ -6,6 +6,7 @@ import 'package:template_project_flutter/app/data/models/video_model.dart';
 import 'package:template_project_flutter/app/data/models/cast_crew_model.dart';
 import 'package:template_project_flutter/app/data/repositories/video_repository.dart';
 import 'package:template_project_flutter/app/data/repositories/cast_crew_repository.dart';
+import 'package:template_project_flutter/app/services/favorite_service.dart';
 import 'package:template_project_flutter/widgets/app_bar.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -21,6 +22,7 @@ class TrailerPage extends StatefulWidget {
 class _TrailerPageState extends State<TrailerPage> {
   final VideoRepository _videoRepository = VideoRepository();
   final CastCrewRepository _castCrewRepository = CastCrewRepository();
+  final FavoriteService _favoriteService = FavoriteService();
 
   bool _isLoading = true;
   bool _isFavorite = false;
@@ -34,12 +36,32 @@ class _TrailerPageState extends State<TrailerPage> {
   void initState() {
     super.initState();
     _loadTrailerData();
+    _checkFavoriteStatus();
   }
 
-  void _toggleFavorite() {
+  Future<void> _checkFavoriteStatus() async {
+    final isFav = await _favoriteService.isFavorite(widget.movie.id);
     setState(() {
-      _isFavorite = !_isFavorite;
+      _isFavorite = isFav;
     });
+  }
+
+  Future<void> _toggleFavorite() async {
+    await _favoriteService.toggleFavorite(widget.movie);
+    await _checkFavoriteStatus();
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            _isFavorite ? 'Added to favorites' : 'Removed from favorites',
+            style: whiteTextStyle.copyWith(fontSize: 14),
+          ),
+          backgroundColor: darkBlueAccent,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   Future<void> _loadTrailerData() async {
