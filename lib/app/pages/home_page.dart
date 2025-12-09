@@ -4,6 +4,8 @@ import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/data/models/movie_model.dart';
 import 'package:template_project_flutter/app/data/repositories/movie_repository.dart';
 import 'package:template_project_flutter/app/pages/movie_detail_page.dart';
+import 'package:template_project_flutter/app/pages/wishlist_page.dart';
+import 'package:template_project_flutter/app/services/favorite_service.dart';
 import 'package:template_project_flutter/widgets/home_card.dart';
 import 'package:template_project_flutter/widgets/home_carousel.dart';
 import 'package:template_project_flutter/widgets/home_genre_poster_list.dart';
@@ -19,6 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final MovieRepository _repository = MovieRepository();
+  final FavoriteService _favoriteService = FavoriteService();
   final TextEditingController searchController = TextEditingController();
 
   List<MovieModel> nowPlayingMovies = [];
@@ -26,11 +29,20 @@ class _HomePageState extends State<HomePage> {
   String selectedGenre = 'All';
   bool isLoading = true;
   String errorMessage = '';
+  int favoriteCount = 0;
 
   @override
   void initState() {
     super.initState();
     _loadMovies();
+    _loadFavoriteCount();
+  }
+
+  Future<void> _loadFavoriteCount() async {
+    final count = await _favoriteService.getFavoriteCount();
+    setState(() {
+      favoriteCount = count;
+    });
   }
 
   Future<void> _loadMovies() async {
@@ -170,23 +182,57 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(context, "/wishlist");
+            onTap: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const WishlistPage()),
+              );
+              _loadFavoriteCount(); // Reload count when returning
             },
-            child: Container(
-              height: 36,
-              width: 36,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: softColor,
-              ),
-              child: Center(
-                child: SvgPicture.asset(
-                  'assets/icons-blue-accent/heart.svg',
-                  width: 24,
-                  height: 24,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  height: 36,
+                  width: 36,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: softColor,
+                  ),
+                  child: Center(
+                    child: SvgPicture.asset(
+                      'assets/icons-blue-accent/heart.svg',
+                      width: 24,
+                      height: 24,
+                    ),
+                  ),
                 ),
-              ),
+                if (favoriteCount > 0)
+                  Positioned(
+                    top: -4,
+                    right: -4,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: redColor,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 18,
+                        minHeight: 18,
+                      ),
+                      child: Center(
+                        child: Text(
+                          favoriteCount > 99 ? '99+' : favoriteCount.toString(),
+                          style: whiteTextStyle.copyWith(
+                            fontSize: 10,
+                            fontWeight: semiBold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ],
