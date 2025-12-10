@@ -4,7 +4,7 @@ import 'package:template_project_flutter/app/data/models/movie_model.dart';
 import 'package:template_project_flutter/app/pages/movie_detail_page.dart';
 import 'package:template_project_flutter/app/services/favorite_service.dart';
 import 'package:template_project_flutter/widgets/app_bar.dart';
-import 'package:template_project_flutter/widgets/home_card.dart';
+import 'package:template_project_flutter/widgets/wishlist_card.dart';
 
 class WishlistPage extends StatefulWidget {
   const WishlistPage({super.key});
@@ -21,26 +21,23 @@ class _WishlistPageState extends State<WishlistPage> {
   @override
   void initState() {
     super.initState();
-    print('WishlistPage: initState called');
     _loadFavorites();
   }
 
   Future<void> _loadFavorites() async {
-    print('WishlistPage: Loading favorites...');
     setState(() {
       _isLoading = true;
     });
 
     try {
       final favorites = await _favoriteService.getFavorites();
-      print('WishlistPage: Loaded ${favorites.length} favorites');
 
       setState(() {
         _favoriteMovies = favorites;
         _isLoading = false;
       });
     } catch (e) {
-      print('WishlistPage: Error loading favorites: $e');
+      debugPrint('WishlistPage: Error loading favorites: $e');
       setState(() {
         _isLoading = false;
       });
@@ -81,17 +78,15 @@ class _WishlistPageState extends State<WishlistPage> {
                   )
                 : _favoriteMovies.isEmpty
                 ? SliverFillRemaining(child: _buildEmptyState())
-                : SliverGrid(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 135 / 231,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                        ),
+                : SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final movie = _favoriteMovies[index];
-                      return _buildMovieCard(movie);
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          bottom: index < _favoriteMovies.length - 1 ? 16 : 0,
+                        ),
+                        child: _buildMovieCard(movie),
+                      );
                     }, childCount: _favoriteMovies.length),
                   ),
           ),
@@ -146,7 +141,12 @@ class _WishlistPageState extends State<WishlistPage> {
   }
 
   Widget _buildMovieCard(MovieModel movie) {
-    return GestureDetector(
+    return WishlistMovieCard(
+      posterUrl: movie.posterUrl,
+      title: movie.title,
+      year: movie.year,
+      genre: movie.genreNames.split(', ').take(2).join(' • '),
+      rating: movie.voteAverage.toString(),
       onTap: () async {
         await Navigator.push(
           context,
@@ -157,60 +157,9 @@ class _WishlistPageState extends State<WishlistPage> {
         // Reload favorites when returning from detail page
         _loadFavorites();
       },
-      onLongPress: () {
-        _showRemoveDialog(movie);
+      onRemove: () {
+        _removeFavorite(movie.id);
       },
-      child: Stack(
-        children: [
-          HomeCard(
-            imageUrl: movie.posterUrl,
-            voteAverage: movie.voteAverage.toString(),
-            title: movie.title,
-            genreIds: movie.genreNames,
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showRemoveDialog(MovieModel movie) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: darkGreyColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Remove from Wishlist?',
-          style: whiteTextStyle.copyWith(fontSize: 18, fontWeight: semiBold),
-        ),
-        content: Text(
-          'Are you sure you want to remove "${movie.title}" from your wishlist?',
-          style: greyTextStyle.copyWith(fontSize: 14, fontWeight: medium),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: greyTextStyle.copyWith(fontSize: 14, fontWeight: semiBold),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _removeFavorite(movie.id);
-            },
-            child: Text(
-              'Remove',
-              style: TextStyle(
-                color: redColor,
-                fontSize: 14,
-                fontWeight: semiBold,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
