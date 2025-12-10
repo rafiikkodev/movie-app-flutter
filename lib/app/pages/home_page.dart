@@ -5,7 +5,6 @@ import 'package:template_project_flutter/app/data/models/movie_model.dart';
 import 'package:template_project_flutter/app/data/repositories/movie_repository.dart';
 import 'package:template_project_flutter/app/pages/movie_detail_page.dart';
 import 'package:template_project_flutter/app/pages/wishlist_page.dart';
-import 'package:template_project_flutter/app/services/favorite_service.dart';
 import 'package:template_project_flutter/widgets/home_card.dart';
 import 'package:template_project_flutter/widgets/home_carousel.dart';
 import 'package:template_project_flutter/widgets/home_genre_poster_list.dart';
@@ -21,7 +20,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final MovieRepository _repository = MovieRepository();
-  final FavoriteService _favoriteService = FavoriteService();
   final TextEditingController searchController = TextEditingController();
 
   List<MovieModel> nowPlayingMovies = [];
@@ -35,14 +33,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _loadMovies();
-    _loadFavoriteCount();
-  }
-
-  Future<void> _loadFavoriteCount() async {
-    final count = await _favoriteService.getFavoriteCount();
-    setState(() {
-      favoriteCount = count;
-    });
   }
 
   Future<void> _loadMovies() async {
@@ -187,7 +177,6 @@ class _HomePageState extends State<HomePage> {
                 context,
                 MaterialPageRoute(builder: (context) => const WishlistPage()),
               );
-              _loadFavoriteCount(); // Reload count when returning
             },
             child: Stack(
               clipBehavior: Clip.none,
@@ -207,31 +196,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-                if (favoriteCount > 0)
-                  Positioned(
-                    top: -4,
-                    right: -4,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: redColor,
-                        shape: BoxShape.circle,
-                      ),
-                      constraints: const BoxConstraints(
-                        minWidth: 18,
-                        minHeight: 18,
-                      ),
-                      child: Center(
-                        child: Text(
-                          favoriteCount > 99 ? '99+' : favoriteCount.toString(),
-                          style: whiteTextStyle.copyWith(
-                            fontSize: 10,
-                            fontWeight: semiBold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
               ],
             ),
           ),
