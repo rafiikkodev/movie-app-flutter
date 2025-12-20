@@ -39,7 +39,8 @@ class FavoriteService {
         return false;
       }
 
-      favorites.add(movie);
+      // Insert at the beginning so newest favorites appear first
+      favorites.insert(0, movie);
       final String encoded = json.encode(
         favorites.map((m) => m.toJson()).toList(),
       );
