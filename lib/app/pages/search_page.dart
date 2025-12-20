@@ -91,7 +91,7 @@ class _SearchPageState extends State<SearchPage> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        "Search movies...",
+                        "Search movies or actors...",
                         style: TextStyle(
                           color: greyColor,
                           fontSize: 12,
