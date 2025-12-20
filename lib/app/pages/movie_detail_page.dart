@@ -4,6 +4,7 @@ import 'package:template_project_flutter/app/data/models/movie_model.dart';
 import 'package:template_project_flutter/app/data/models/cast_crew_model.dart';
 import 'package:template_project_flutter/app/data/repositories/movie_repository.dart';
 import 'package:template_project_flutter/app/data/repositories/cast_crew_repository.dart';
+import 'package:template_project_flutter/app/pages/actor_detail_page.dart';
 import 'package:template_project_flutter/app/pages/trailer_page.dart';
 import 'package:template_project_flutter/app/services/favorite_service.dart';
 import 'package:template_project_flutter/widgets/buttons.dart';
@@ -434,39 +435,50 @@ class _CastItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: darkGreyColor,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                ActorDetailPage(actorId: cast.id, actorName: cast.name),
           ),
-          child: ClipOval(
-            child: cast.hasProfile
-                ? Image.network(
-                    cast.profileUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(Icons.person, size: 40, color: greyColor);
-                    },
-                  )
-                : Icon(Icons.person, size: 40, color: greyColor),
+        );
+      },
+      child: Column(
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: darkGreyColor,
+            ),
+            child: ClipOval(
+              child: cast.hasProfile
+                  ? Image.network(
+                      cast.profileUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(Icons.person, size: 40, color: greyColor);
+                      },
+                    )
+                  : Icon(Icons.person, size: 40, color: greyColor),
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        SizedBox(
-          width: 80,
-          child: Text(
-            cast.name,
-            style: whiteTextStyle.copyWith(fontSize: 12, fontWeight: medium),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          const SizedBox(height: 8),
+          SizedBox(
+            width: 80,
+            child: Text(
+              cast.name,
+              style: whiteTextStyle.copyWith(fontSize: 12, fontWeight: medium),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
