@@ -175,7 +175,10 @@ class _HomePageState extends State<HomePage> {
             onTap: () async {
               await Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const WishlistPage()),
+                MaterialPageRoute(
+                  builder: (context) =>
+                      const WishlistPage(showBackButton: true),
+                ),
               );
             },
             child: Stack(
