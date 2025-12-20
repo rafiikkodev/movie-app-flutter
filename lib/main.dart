@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/data/models/movie_model.dart';
-import 'package:template_project_flutter/app/pages/download_page.dart';
 import 'package:template_project_flutter/app/pages/onboarding_page.dart';
 import 'package:template_project_flutter/app/pages/home_page.dart';
 import 'package:template_project_flutter/app/pages/profile_page.dart';
@@ -49,8 +48,8 @@ class MyApp extends StatelessWidget {
         "/search": (context) => const SearchPage(),
         "/search_result": (context) => const SearchResultPage(),
         "/search_by_actor": (context) => const SearchByActorPage(),
-        "/download": (context) => const DownloadPage(),
-        "/wishlist": (context) => const WishlistPage(),
+        "/download": (context) => const WishlistPage(),
+        "/wishlist": (context) => const WishlistPage(showBackButton: true),
         "/profile": (context) => const ProfilePage(),
       },
       onGenerateRoute: (settings) {
@@ -84,9 +83,9 @@ class MainNavigation extends StatelessWidget {
           label: 'Search',
         ),
         NavItem(
-          icon: 'assets/icons-white/download.svg',
-          selectedIcon: 'assets/icons-blue-accent/download.svg',
-          label: 'Download',
+          icon: 'assets/icons-white/heart.svg',
+          selectedIcon: 'assets/icons-blue-accent/heart.svg',
+          label: 'Wishlist',
         ),
         NavItem(
           icon: 'assets/icons-white/profile 1.svg',
@@ -94,7 +93,7 @@ class MainNavigation extends StatelessWidget {
           label: 'Profile',
         ),
       ],
-      pages: const [HomePage(), SearchPage(), DownloadPage(), ProfilePage()],
+      pages: [HomePage(), SearchPage(), WishlistPage(), ProfilePage()],
     );
   }
 }
