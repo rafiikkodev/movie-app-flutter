@@ -65,6 +65,11 @@ class MovieRepository {
     }
   }
 
+  // Alias for getMovieDetail (for consistency)
+  Future<MovieModel> getMovieById(int movieId) async {
+    return getMovieDetail(movieId);
+  }
+
   // Get Similar Movies
   Future<List<MovieModel>> getSimilarMovies(int movieId, {int page = 1}) async {
     try {
