@@ -7,7 +7,9 @@ import 'package:template_project_flutter/widgets/app_bar.dart';
 import 'package:template_project_flutter/widgets/wishlist_card.dart';
 
 class WishlistPage extends StatefulWidget {
-  const WishlistPage({super.key});
+  final bool showBackButton;
+  
+  const WishlistPage({super.key, this.showBackButton = false});
 
   @override
   State<WishlistPage> createState() => _WishlistPageState();
@@ -33,11 +35,12 @@ class _WishlistPageState extends State<WishlistPage> {
       final favorites = await _favoriteService.getFavorites();
 
       setState(() {
+        // Favorites are already sorted (newest first) from service
         _favoriteMovies = favorites;
         _isLoading = false;
       });
     } catch (e) {
-      debugPrint('WishlistPage: Error loading favorites: $e');
+      debugPrint('DownloadPage: Error loading favorites: $e');
       setState(() {
         _isLoading = false;
       });
@@ -64,34 +67,32 @@ class _WishlistPageState extends State<WishlistPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          const CustomAppBar(showBackButton: true, title: "My Wishlist"),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-            sliver: _isLoading
-                ? SliverFillRemaining(
-                    child: Center(
-                      child: CircularProgressIndicator(color: darkBlueAccent),
-                    ),
-                  )
-                : _favoriteMovies.isEmpty
-                ? SliverFillRemaining(child: _buildEmptyState())
-                : SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      final movie = _favoriteMovies[index];
-                      return Padding(
-                        padding: EdgeInsets.only(
-                          bottom: index < _favoriteMovies.length - 1 ? 16 : 0,
-                        ),
-                        child: _buildMovieCard(movie),
-                      );
-                    }, childCount: _favoriteMovies.length),
+    return CustomScrollView(
+      slivers: [
+        CustomAppBar(showBackButton: widget.showBackButton, title: "My Wishlist"),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          sliver: _isLoading
+              ? SliverFillRemaining(
+                  child: Center(
+                    child: CircularProgressIndicator(color: darkBlueAccent),
                   ),
-          ),
-        ],
-      ),
+                )
+              : _favoriteMovies.isEmpty
+              ? SliverFillRemaining(child: _buildEmptyState())
+              : SliverList(
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    final movie = _favoriteMovies[index];
+                    return Padding(
+                      padding: EdgeInsets.only(
+                        bottom: index < _favoriteMovies.length - 1 ? 16 : 0,
+                      ),
+                      child: _buildMovieCard(movie),
+                    );
+                  }, childCount: _favoriteMovies.length),
+                ),
+        ),
+      ],
     );
   }
 
@@ -113,26 +114,6 @@ class _WishlistPageState extends State<WishlistPage> {
               'Start adding movies to your wishlist by tapping the heart icon',
               style: greyTextStyle.copyWith(fontSize: 14, fontWeight: medium),
               textAlign: TextAlign.center,
-            ),
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: darkBlueAccent,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(56),
-              ),
-            ),
-            child: Text(
-              'Browse Movies',
-              style: whiteTextStyle.copyWith(
-                fontSize: 14,
-                fontWeight: semiBold,
-              ),
             ),
           ),
         ],
