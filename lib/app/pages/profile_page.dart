@@ -1,10 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
+import 'package:template_project_flutter/app/data/services/auth_service.dart';
 import 'package:template_project_flutter/widgets/buttons.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
+
+  Future<void> _handleLogout(BuildContext context) async {
+    try {
+      final authService = AuthService();
+      await authService.signOut();
+
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/sign-in',
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Logout failed: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +49,11 @@ class ProfilePage extends StatelessWidget {
           buildGeneral(),
           buildMore(),
           SizedBox(height: 40),
-          CustomButton.outlined(title: "Log Out", width: double.infinity),
+          CustomButton.outlined(
+            title: "Log Out",
+            width: double.infinity,
+            onPressed: () => _handleLogout(context),
+          ),
           SizedBox(height: 50),
         ],
       ),

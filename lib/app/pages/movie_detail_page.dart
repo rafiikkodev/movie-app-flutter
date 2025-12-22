@@ -6,7 +6,7 @@ import 'package:template_project_flutter/app/data/repositories/movie_repository.
 import 'package:template_project_flutter/app/data/repositories/cast_crew_repository.dart';
 import 'package:template_project_flutter/app/pages/actor_detail_page.dart';
 import 'package:template_project_flutter/app/pages/trailer_page.dart';
-import 'package:template_project_flutter/app/services/favorite_service.dart';
+import 'package:template_project_flutter/app/data/services/favorite_service.dart';
 import 'package:template_project_flutter/widgets/buttons.dart';
 import 'package:template_project_flutter/widgets/rate.dart';
 import 'package:template_project_flutter/widgets/app_bar.dart';
@@ -245,7 +245,7 @@ class _MovieHeader extends StatelessWidget {
         const SizedBox(height: 16),
         _MovieInfo(year: movie.year),
         const SizedBox(height: 16),
-        _Genres(genres: movie.genreNames),
+        _Genres(genres: movie.genreNamesDisplay),
       ],
     );
   }
@@ -544,7 +544,7 @@ class _SimilarMovieItem extends StatelessWidget {
         imageUrl: movie.posterUrl,
         voteAverage: movie.voteAverage.toString(),
         title: movie.title,
-        genreIds: movie.genreNames,
+        genreIds: movie.genreNamesDisplay,
       ),
     );
   }
