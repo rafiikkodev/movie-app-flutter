@@ -6,7 +6,7 @@ import 'package:template_project_flutter/app/data/models/video_model.dart';
 import 'package:template_project_flutter/app/data/models/cast_crew_model.dart';
 import 'package:template_project_flutter/app/data/repositories/video_repository.dart';
 import 'package:template_project_flutter/app/data/repositories/cast_crew_repository.dart';
-import 'package:template_project_flutter/app/services/favorite_service.dart';
+import 'package:template_project_flutter/app/data/services/favorite_service.dart';
 import 'package:template_project_flutter/widgets/app_bar.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -350,7 +350,7 @@ class _TrailerPageState extends State<TrailerPage> {
                 Icon(Icons.movie, size: 16, color: greyColor),
                 const SizedBox(width: 8),
                 Text(
-                  widget.movie.genreNames.split(', ').first,
+                  widget.movie.genreNamesDisplay.split(', ').first,
                   style: greyTextStyle.copyWith(
                     fontSize: 14,
                     fontWeight: medium,

@@ -197,7 +197,7 @@ class _SearchPageState extends State<SearchPage> {
               imageUrl: movie.posterUrl,
               voteAverage: movie.voteAverage.toString(),
               title: movie.title,
-              genreIds: movie.genreNames,
+              genreIds: movie.genreNamesDisplay,
             ),
           );
         },

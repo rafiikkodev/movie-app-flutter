@@ -86,7 +86,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               title: "Get Started",
                               width: double.infinity,
                               onPressed: () {
-                                Navigator.pushNamed(context, "/home");
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  "/sign-up",
+                                );
                               },
                             ),
                             const SizedBox(height: 20),
@@ -94,7 +97,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               title: "Sign In",
                               width: double.infinity,
                               onPressed: () {
-                                // Navigate to sign in
+                                Navigator.pushNamed(context, "/sign-in");
                               },
                             ),
                           ],

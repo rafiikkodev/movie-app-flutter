@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/data/models/movie_model.dart';
 import 'package:template_project_flutter/app/pages/movie_detail_page.dart';
-import 'package:template_project_flutter/app/services/favorite_service.dart';
+import 'package:template_project_flutter/app/data/services/favorite_service.dart';
 import 'package:template_project_flutter/widgets/app_bar.dart';
 import 'package:template_project_flutter/widgets/wishlist_card.dart';
 
@@ -129,7 +129,7 @@ class _WishlistPageState extends State<WishlistPage> {
       posterUrl: movie.posterUrl,
       title: movie.title,
       year: movie.year,
-      genre: movie.genreNames.split(', ').take(2).join(' • '),
+      genre: movie.genreNamesDisplay.split(', ').take(2).join(' • '),
       rating: movie.voteAverage.toString(),
       onTap: () async {
         await Navigator.push(

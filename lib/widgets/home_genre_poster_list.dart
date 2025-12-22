@@ -22,7 +22,9 @@ class GenrePosterList extends StatelessWidget {
         ? movies
         : movies
               .where(
-                (m) => m.genreNames.toLowerCase().contains(genre.toLowerCase()),
+                (m) => m.genreNamesDisplay.toLowerCase().contains(
+                  genre.toLowerCase(),
+                ),
               )
               .toList();
 
@@ -116,7 +118,7 @@ class GenrePosterList extends StatelessWidget {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              movie.genreNames,
+                              movie.genreNamesDisplay,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: whiteTextStyle.copyWith(

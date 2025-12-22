@@ -309,7 +309,7 @@ class _HomePageState extends State<HomePage> {
                   imageUrl: movie.posterUrl,
                   voteAverage: movie.voteAverage.toString(),
                   title: movie.title,
-                  genreIds: movie.genreNames,
+                  genreIds: movie.genreNamesDisplay,
                 ),
               );
             },

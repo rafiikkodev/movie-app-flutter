@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/data/models/movie_model.dart';
 import 'package:template_project_flutter/app/pages/onboarding_page.dart';
@@ -8,8 +9,11 @@ import 'package:template_project_flutter/app/pages/profile_page.dart';
 import 'package:template_project_flutter/app/pages/search_by_actor_page.dart';
 import 'package:template_project_flutter/app/pages/search_page.dart';
 import 'package:template_project_flutter/app/pages/search_result_page.dart';
+import 'package:template_project_flutter/app/pages/signin_page.dart';
+import 'package:template_project_flutter/app/pages/signup_page.dart';
 import 'package:template_project_flutter/app/pages/trailer_page.dart';
 import 'package:template_project_flutter/app/pages/wishlist_page.dart';
+import 'package:template_project_flutter/app/data/services/auth_state_listener.dart';
 import 'package:template_project_flutter/widgets/navbar.dart';
 
 Future<void> main() async {
@@ -18,8 +22,15 @@ Future<void> main() async {
   // Load .env file
   await dotenv.load(fileName: ".env");
 
+  await Supabase.initialize(
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+  );
+
   runApp(const MyApp());
 }
+
+final supabase = Supabase.instance.client;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -43,7 +54,17 @@ class MyApp extends StatelessWidget {
         ),
       ),
       routes: {
-        "/": (context) => const OnboardingPage(),
+        "/": (context) => AuthStateListener(
+          builder: (isAuthenticated) {
+            if (isAuthenticated) {
+              return const MainNavigation();
+            } else {
+              return const OnboardingPage();
+            }
+          },
+        ),
+        "/sign-in": (context) => const SigninPage(),
+        "/sign-up": (context) => const SignupPage(),
         "/home": (context) => const MainNavigation(),
         "/search": (context) => const SearchPage(),
         "/search_result": (context) => const SearchResultPage(),

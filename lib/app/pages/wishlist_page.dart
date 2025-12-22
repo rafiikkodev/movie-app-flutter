@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/data/models/movie_model.dart';
 import 'package:template_project_flutter/app/pages/movie_detail_page.dart';
-import 'package:template_project_flutter/app/services/favorite_service.dart';
+import 'package:template_project_flutter/app/data/services/favorite_service.dart';
 import 'package:template_project_flutter/widgets/app_bar.dart';
 import 'package:template_project_flutter/widgets/wishlist_card.dart';
 
 class WishlistPage extends StatefulWidget {
   final bool showBackButton;
-  
+
   const WishlistPage({super.key, this.showBackButton = false});
 
   @override
@@ -69,7 +69,10 @@ class _WishlistPageState extends State<WishlistPage> {
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        CustomAppBar(showBackButton: widget.showBackButton, title: "My Wishlist"),
+        CustomAppBar(
+          showBackButton: widget.showBackButton,
+          title: "My Wishlist",
+        ),
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
           sliver: _isLoading
@@ -126,7 +129,7 @@ class _WishlistPageState extends State<WishlistPage> {
       posterUrl: movie.posterUrl,
       title: movie.title,
       year: movie.year,
-      genre: movie.genreNames.split(', ').take(2).join(' • '),
+      genre: movie.genreNamesDisplay.split(', ').take(2).join(' • '),
       rating: movie.voteAverage.toString(),
       onTap: () async {
         await Navigator.push(

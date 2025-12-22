@@ -9,6 +9,7 @@ class MovieModel {
   final double voteAverage;
   final String releaseDate;
   final List<int> genreIds;
+  final String? genreNames; // Added for Supabase storage
 
   MovieModel({
     required this.id,
@@ -19,6 +20,7 @@ class MovieModel {
     required this.voteAverage,
     required this.releaseDate,
     required this.genreIds,
+    this.genreNames, // Optional, computed from genreIds if not provided
   });
 
   factory MovieModel.fromJson(Map<String, dynamic> json) {
@@ -45,6 +47,7 @@ class MovieModel {
       'vote_average': voteAverage,
       'release_date': releaseDate,
       'genre_ids': genreIds,
+      'genre_names': genreNames ?? _computeGenreNames(),
     };
   }
 
@@ -62,7 +65,7 @@ class MovieModel {
   }
 
   // Helper untuk get genre names
-  String get genreNames {
+  String _computeGenreNames() {
     // Genre mapping dari TMDB
     const genreMap = {
       28: 'Action',
@@ -97,6 +100,9 @@ class MovieModel {
 
     return genres.isEmpty ? 'Unknown' : genres.join(' • ');
   }
+
+  // Public getter untuk genreNames
+  String get genreNamesDisplay => genreNames ?? _computeGenreNames();
 }
 
 // Response wrapper untuk list movies
