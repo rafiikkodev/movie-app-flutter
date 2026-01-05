@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/data/models/movie_model.dart';
+import 'package:template_project_flutter/app/data/providers/favorite_provider.dart';
 import 'package:template_project_flutter/app/pages/onboarding_page.dart';
 import 'package:template_project_flutter/app/pages/home_page.dart';
 import 'package:template_project_flutter/app/pages/profile_page.dart';
@@ -37,51 +39,62 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        scaffoldBackgroundColor: darkBackgroundColor,
-        appBarTheme: AppBarTheme(
-          backgroundColor: darkBackgroundColor,
-          surfaceTintColor: darkBackgroundColor,
-          elevation: 0,
-          centerTitle: true,
-          iconTheme: IconThemeData(color: blackColor),
-          titleTextStyle: blackTextStyle.copyWith(
-            fontSize: 20,
-            fontWeight: semiBold,
+    return ChangeNotifierProvider(
+      create: (_) => FavoriteProvider(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          scaffoldBackgroundColor: darkBackgroundColor,
+          appBarTheme: AppBarTheme(
+            backgroundColor: darkBackgroundColor,
+            surfaceTintColor: darkBackgroundColor,
+            elevation: 0,
+            centerTitle: true,
+            iconTheme: IconThemeData(color: blackColor),
+            titleTextStyle: blackTextStyle.copyWith(
+              fontSize: 20,
+              fontWeight: semiBold,
+            ),
           ),
         ),
+        routes: {
+          "/": (context) => AuthStateListener(
+            builder: (isAuthenticated) {
+              if (isAuthenticated) {
+                // Initialize favorites when user is authenticated
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  context.read<FavoriteProvider>().initialize();
+                });
+                return const MainNavigation();
+              } else {
+                // Reset favorites when user logs out
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  context.read<FavoriteProvider>().reset();
+                });
+                return const OnboardingPage();
+              }
+            },
+          ),
+          "/sign-in": (context) => const SigninPage(),
+          "/sign-up": (context) => const SignupPage(),
+          "/home": (context) => const MainNavigation(),
+          "/search": (context) => const SearchPage(),
+          "/search_result": (context) => const SearchResultPage(),
+          "/search_by_actor": (context) => const SearchByActorPage(),
+          "/download": (context) => const WishlistPage(),
+          "/wishlist": (context) => const WishlistPage(showBackButton: true),
+          "/profile": (context) => const ProfilePage(),
+        },
+        onGenerateRoute: (settings) {
+          if (settings.name == '/trailer') {
+            final movie = settings.arguments as MovieModel;
+            return MaterialPageRoute(
+              builder: (context) => TrailerPage(movie: movie),
+            );
+          }
+          return null;
+        },
       ),
-      routes: {
-        "/": (context) => AuthStateListener(
-          builder: (isAuthenticated) {
-            if (isAuthenticated) {
-              return const MainNavigation();
-            } else {
-              return const OnboardingPage();
-            }
-          },
-        ),
-        "/sign-in": (context) => const SigninPage(),
-        "/sign-up": (context) => const SignupPage(),
-        "/home": (context) => const MainNavigation(),
-        "/search": (context) => const SearchPage(),
-        "/search_result": (context) => const SearchResultPage(),
-        "/search_by_actor": (context) => const SearchByActorPage(),
-        "/download": (context) => const WishlistPage(),
-        "/wishlist": (context) => const WishlistPage(showBackButton: true),
-        "/profile": (context) => const ProfilePage(),
-      },
-      onGenerateRoute: (settings) {
-        if (settings.name == '/trailer') {
-          final movie = settings.arguments as MovieModel;
-          return MaterialPageRoute(
-            builder: (context) => TrailerPage(movie: movie),
-          );
-        }
-        return null;
-      },
     );
   }
 }

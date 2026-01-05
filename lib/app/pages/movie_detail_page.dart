@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/data/models/movie_model.dart';
 import 'package:template_project_flutter/app/data/models/cast_crew_model.dart';
+import 'package:template_project_flutter/app/data/providers/favorite_provider.dart';
 import 'package:template_project_flutter/app/data/repositories/movie_repository.dart';
 import 'package:template_project_flutter/app/data/repositories/cast_crew_repository.dart';
 import 'package:template_project_flutter/app/pages/actor_detail_page.dart';
 import 'package:template_project_flutter/app/pages/trailer_page.dart';
-import 'package:template_project_flutter/app/data/services/favorite_service.dart';
 import 'package:template_project_flutter/widgets/buttons.dart';
 import 'package:template_project_flutter/widgets/rate.dart';
 import 'package:template_project_flutter/widgets/app_bar.dart';
@@ -25,10 +26,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   final ScrollController _scrollController = ScrollController();
   final MovieRepository _movieRepository = MovieRepository();
   final CastCrewRepository _castCrewRepository = CastCrewRepository();
-  final FavoriteService _favoriteService = FavoriteService();
 
   double _scrollOffset = 0.0;
-  bool _isFavorite = false;
   bool _isLoading = true;
 
   List<CastModel> _cast = [];
@@ -39,14 +38,6 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     super.initState();
     _scrollController.addListener(_onScroll);
     _loadMovieDetails();
-    _checkFavoriteStatus();
-  }
-
-  Future<void> _checkFavoriteStatus() async {
-    final isFav = await _favoriteService.isFavorite(widget.movie.id);
-    setState(() {
-      _isFavorite = isFav;
-    });
   }
 
   Future<void> _loadMovieDetails() async {
@@ -88,22 +79,23 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     });
   }
 
-  Future<void> _toggleFavorite() async {
-    await _favoriteService.toggleFavorite(widget.movie);
-    await _checkFavoriteStatus();
+  void _toggleFavorite() {
+    final provider = context.read<FavoriteProvider>();
+    final wasF = provider.isFavorite(widget.movie.id);
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isFavorite ? 'Added to favorites' : 'Removed from favorites',
-            style: whiteTextStyle.copyWith(fontSize: 14),
-          ),
-          backgroundColor: darkBlueAccent,
-          duration: const Duration(seconds: 2),
+    // Optimistic update - akan langsung update UI
+    provider.toggleFavorite(widget.movie);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          !wasF ? 'Added to favorites' : 'Removed from favorites',
+          style: whiteTextStyle.copyWith(fontSize: 14),
         ),
-      );
-    }
+        backgroundColor: darkBlueAccent,
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   double get _overlayOpacity => (_scrollOffset / 200).clamp(0.0, 1.0);
@@ -170,39 +162,45 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   }
 
   Widget _buildContent() {
-    return CustomScrollView(
-      controller: _scrollController,
-      slivers: [
-        CustomAppBar(
-          showBackButton: true,
-          showFavoriteButton: true,
-          isFavorite: _isFavorite,
-          onFavoritePressed: _toggleFavorite,
-        ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 24, right: 24, top: 40),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _MovieHeader(movie: widget.movie),
-                const SizedBox(height: 24),
-                _ActionButtons(movie: widget.movie),
-                const SizedBox(height: 24),
-                _SynopsisSection(overview: widget.movie.overview),
-                const SizedBox(height: 24),
-                _CastSection(cast: _cast, isLoading: _isLoading),
-                const SizedBox(height: 24),
-                _SimilarMoviesSection(
-                  movies: _similarMovies,
-                  isLoading: _isLoading,
-                ),
-                const SizedBox(height: 24),
-              ],
+    return Consumer<FavoriteProvider>(
+      builder: (context, favoriteProvider, child) {
+        final isFavorite = favoriteProvider.isFavorite(widget.movie.id);
+
+        return CustomScrollView(
+          controller: _scrollController,
+          slivers: [
+            CustomAppBar(
+              showBackButton: true,
+              showFavoriteButton: true,
+              isFavorite: isFavorite,
+              onFavoritePressed: _toggleFavorite,
             ),
-          ),
-        ),
-      ],
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 24, right: 24, top: 40),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _MovieHeader(movie: widget.movie),
+                    const SizedBox(height: 24),
+                    _ActionButtons(movie: widget.movie),
+                    const SizedBox(height: 24),
+                    _SynopsisSection(overview: widget.movie.overview),
+                    const SizedBox(height: 24),
+                    _CastSection(cast: _cast, isLoading: _isLoading),
+                    const SizedBox(height: 24),
+                    _SimilarMoviesSection(
+                      movies: _similarMovies,
+                      isLoading: _isLoading,
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

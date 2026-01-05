@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/data/models/movie_model.dart';
+import 'package:template_project_flutter/app/data/providers/favorite_provider.dart';
 import 'package:template_project_flutter/app/pages/movie_detail_page.dart';
-import 'package:template_project_flutter/app/data/services/favorite_service.dart';
 import 'package:template_project_flutter/widgets/app_bar.dart';
 import 'package:template_project_flutter/widgets/wishlist_card.dart';
 
@@ -16,86 +17,81 @@ class WishlistPage extends StatefulWidget {
 }
 
 class _WishlistPageState extends State<WishlistPage> {
-  final FavoriteService _favoriteService = FavoriteService();
-  List<MovieModel> _favoriteMovies = [];
-  bool _isLoading = true;
-
   @override
   void initState() {
     super.initState();
-    _loadFavorites();
-  }
-
-  Future<void> _loadFavorites() async {
-    setState(() {
-      _isLoading = true;
+    // Initialize favorites jika belum diinisialisasi
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<FavoriteProvider>();
+      if (!provider.isInitialized) {
+        provider.initialize();
+      }
     });
-
-    try {
-      final favorites = await _favoriteService.getFavorites();
-
-      setState(() {
-        // Favorites are already sorted (newest first) from service
-        _favoriteMovies = favorites;
-        _isLoading = false;
-      });
-    } catch (e) {
-      debugPrint('DownloadPage: Error loading favorites: $e');
-      setState(() {
-        _isLoading = false;
-      });
-    }
   }
 
-  Future<void> _removeFavorite(int movieId) async {
-    await _favoriteService.removeFavorite(movieId);
-    await _loadFavorites();
+  void _removeFavorite(MovieModel movie) {
+    final provider = context.read<FavoriteProvider>();
+    provider.toggleFavorite(movie);
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Removed from favorites',
-            style: whiteTextStyle.copyWith(fontSize: 14),
-          ),
-          backgroundColor: darkBlueAccent,
-          duration: const Duration(seconds: 2),
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Removed from favorites',
+          style: whiteTextStyle.copyWith(fontSize: 14),
         ),
-      );
-    }
+        backgroundColor: darkBlueAccent,
+        duration: const Duration(seconds: 2),
+        action: SnackBarAction(
+          label: 'UNDO',
+          textColor: whiteColor,
+          onPressed: () {
+            // Re-add to favorites (optimistic update akan mengembalikannya)
+            provider.toggleFavorite(movie);
+          },
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        CustomAppBar(
-          showBackButton: widget.showBackButton,
-          title: "My Wishlist",
-        ),
-        SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-          sliver: _isLoading
-              ? SliverFillRemaining(
-                  child: Center(
-                    child: CircularProgressIndicator(color: darkBlueAccent),
-                  ),
-                )
-              : _favoriteMovies.isEmpty
-              ? SliverFillRemaining(child: _buildEmptyState())
-              : SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    final movie = _favoriteMovies[index];
-                    return Padding(
-                      padding: EdgeInsets.only(
-                        bottom: index < _favoriteMovies.length - 1 ? 16 : 0,
+    return Consumer<FavoriteProvider>(
+      builder: (context, favoriteProvider, child) {
+        final favoriteMovies = favoriteProvider.favorites;
+        final isLoading =
+            favoriteProvider.isLoading && !favoriteProvider.isInitialized;
+
+        return CustomScrollView(
+          slivers: [
+            CustomAppBar(
+              showBackButton: widget.showBackButton,
+              title: "My Wishlist",
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              sliver: isLoading
+                  ? SliverFillRemaining(
+                      child: Center(
+                        child: CircularProgressIndicator(color: darkBlueAccent),
                       ),
-                      child: _buildMovieCard(movie),
-                    );
-                  }, childCount: _favoriteMovies.length),
-                ),
-        ),
-      ],
+                    )
+                  : favoriteMovies.isEmpty
+                  ? SliverFillRemaining(child: _buildEmptyState())
+                  : SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final movie = favoriteMovies[index];
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            bottom: index < favoriteMovies.length - 1 ? 16 : 0,
+                          ),
+                          child: _buildMovieCard(movie),
+                        );
+                      }, childCount: favoriteMovies.length),
+                    ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -138,11 +134,10 @@ class _WishlistPageState extends State<WishlistPage> {
             builder: (context) => MovieDetailPage(movie: movie),
           ),
         );
-        // Reload favorites when returning from detail page
-        _loadFavorites();
+        // Tidak perlu reload - state sudah shared via Provider
       },
       onRemove: () {
-        _removeFavorite(movie.id);
+        _removeFavorite(movie);
       },
     );
   }
