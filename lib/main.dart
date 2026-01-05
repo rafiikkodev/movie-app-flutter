@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/data/models/movie_model.dart';
 import 'package:template_project_flutter/app/data/providers/favorite_provider.dart';
+import 'package:template_project_flutter/app/data/providers/comment_provider.dart';
 import 'package:template_project_flutter/app/pages/onboarding_page.dart';
 import 'package:template_project_flutter/app/pages/home_page.dart';
 import 'package:template_project_flutter/app/pages/profile_page.dart';
@@ -39,8 +40,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => FavoriteProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => FavoriteProvider()),
+        ChangeNotifierProvider(create: (_) => CommentProvider()),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
@@ -61,15 +65,16 @@ class MyApp extends StatelessWidget {
           "/": (context) => AuthStateListener(
             builder: (isAuthenticated) {
               if (isAuthenticated) {
-                // Initialize favorites when user is authenticated
+                // Initialize providers when user is authenticated
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   context.read<FavoriteProvider>().initialize();
                 });
                 return const MainNavigation();
               } else {
-                // Reset favorites when user logs out
+                // Reset providers when user logs out
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   context.read<FavoriteProvider>().reset();
+                  context.read<CommentProvider>().reset();
                 });
                 return const OnboardingPage();
               }

@@ -4,14 +4,17 @@ import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/data/models/movie_model.dart';
 import 'package:template_project_flutter/app/data/models/cast_crew_model.dart';
 import 'package:template_project_flutter/app/data/providers/favorite_provider.dart';
+import 'package:template_project_flutter/app/data/providers/comment_provider.dart';
 import 'package:template_project_flutter/app/data/repositories/movie_repository.dart';
 import 'package:template_project_flutter/app/data/repositories/cast_crew_repository.dart';
 import 'package:template_project_flutter/app/pages/actor_detail_page.dart';
 import 'package:template_project_flutter/app/pages/trailer_page.dart';
+import 'package:template_project_flutter/app/pages/discussion_page.dart';
 import 'package:template_project_flutter/widgets/buttons.dart';
 import 'package:template_project_flutter/widgets/rate.dart';
 import 'package:template_project_flutter/widgets/app_bar.dart';
 import 'package:template_project_flutter/widgets/home_card.dart';
+import 'package:template_project_flutter/widgets/comment_section.dart';
 
 class MovieDetailPage extends StatefulWidget {
   final MovieModel movie;
@@ -38,6 +41,10 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     super.initState();
     _scrollController.addListener(_onScroll);
     _loadMovieDetails();
+    // Load comments
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CommentProvider>().loadComments(widget.movie.id);
+    });
   }
 
   Future<void> _loadMovieDetails() async {
@@ -192,6 +199,20 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                     _SimilarMoviesSection(
                       movies: _similarMovies,
                       isLoading: _isLoading,
+                    ),
+                    const SizedBox(height: 24),
+                    // Comments Section
+                    CommentPreviewSection(
+                      movieId: widget.movie.id,
+                      onViewAll: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                DiscussionPage(movie: widget.movie),
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 24),
                   ],
