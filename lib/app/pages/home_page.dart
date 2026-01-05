@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/data/models/movie_model.dart';
 import 'package:template_project_flutter/app/data/repositories/movie_repository.dart';
+import 'package:template_project_flutter/app/data/services/auth_service.dart';
 import 'package:template_project_flutter/app/pages/movie_detail_page.dart';
 import 'package:template_project_flutter/app/pages/wishlist_page.dart';
 import 'package:template_project_flutter/widgets/home_card.dart';
@@ -20,6 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final MovieRepository _repository = MovieRepository();
+  final AuthService _authService = AuthService();
   final TextEditingController searchController = TextEditingController();
 
   List<MovieModel> nowPlayingMovies = [];
@@ -29,10 +31,39 @@ class _HomePageState extends State<HomePage> {
   String errorMessage = '';
   int favoriteCount = 0;
 
+  // User data
+  String userName = 'User';
+  String userEmail = '';
+  String? userAvatarUrl;
+
   @override
   void initState() {
     super.initState();
     _loadMovies();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      final user = _authService.currentUser;
+      if (user != null) {
+        final profile = await _authService.getUserProfile();
+        if (mounted) {
+          setState(() {
+            userEmail = user.email ?? '';
+            userName =
+                profile?['full_name'] ??
+                profile?['username'] ??
+                user.userMetadata?['username'] ??
+                user.email?.split('@')[0] ??
+                'User';
+            userAvatarUrl = profile?['avatar_url'];
+          });
+        }
+      }
+    } catch (e) {
+      print('Error loading user data: $e');
+    }
   }
 
   Future<void> _loadMovies() async {
@@ -154,7 +185,7 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Hello, Smith",
+                    "Hello, $userName",
                     style: whiteTextStyle.copyWith(
                       fontSize: 16,
                       fontWeight: semiBold,
