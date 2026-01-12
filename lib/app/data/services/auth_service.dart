@@ -22,20 +22,67 @@ class AuthService {
       final response = await _supabase.auth.signUp(
         email: email,
         password: password,
-        data: {
-          'username': username ?? email.split('@')[0],
-        },
+        data: {'username': username ?? email.split('@')[0]},
       );
 
       if (response.user != null) {
-        // Profile akan auto-created oleh trigger
-        print('User created: ${response.user!.id}');
+        final userId = response.user!.id;
+        final userName = username ?? email.split('@')[0];
+
+        print('User created in auth.users: $userId');
+
+        // MANUAL INSERT ke tabel profiles sebagai fallback
+        // (jika trigger Supabase belum di-setup)
+        try {
+          await _createProfileIfNotExists(
+            userId: userId,
+            email: email,
+            username: userName,
+          );
+          print('Profile created successfully for user: $userId');
+        } catch (profileError) {
+          // Jika error karena trigger sudah create (duplicate), abaikan
+          if (profileError.toString().contains('duplicate') ||
+              profileError.toString().contains('23505')) {
+            print('Profile already exists (created by trigger)');
+          } else {
+            print('Warning: Failed to create profile: $profileError');
+            // Tidak throw error agar registrasi tetap sukses
+          }
+        }
       }
 
       return response;
     } catch (e) {
       print('Sign up error: $e');
       rethrow;
+    }
+  }
+
+  // Helper: Create profile in public.profiles table
+  Future<void> _createProfileIfNotExists({
+    required String userId,
+    required String email,
+    required String username,
+  }) async {
+    // Cek apakah profile sudah ada
+    final existingProfile = await _supabase
+        .from('profiles')
+        .select()
+        .eq('id', userId)
+        .maybeSingle();
+
+    if (existingProfile == null) {
+      // Profile belum ada, create baru
+      await _supabase.from('profiles').insert({
+        'id': userId,
+        'email': email,
+        'username': username,
+        'created_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      });
+    } else {
+      print('Profile already exists in database');
     }
   }
 
@@ -88,11 +135,7 @@ class AuthService {
   }) async {
     try {
       return await _supabase.auth.updateUser(
-        UserAttributes(
-          email: email,
-          password: password,
-          data: data,
-        ),
+        UserAttributes(email: email, password: password, data: data),
       );
     } catch (e) {
       print('Update user error: $e');
@@ -129,12 +172,15 @@ class AuthService {
       final userId = currentUser?.id;
       if (userId == null) throw Exception('User not logged in');
 
-      await _supabase.from('profiles').update({
-        if (username != null) 'username': username,
-        if (fullName != null) 'full_name': fullName,
-        if (avatarUrl != null) 'avatar_url': avatarUrl,
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('id', userId);
+      await _supabase
+          .from('profiles')
+          .update({
+            if (username != null) 'username': username,
+            if (fullName != null) 'full_name': fullName,
+            if (avatarUrl != null) 'avatar_url': avatarUrl,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', userId);
 
       print('Profile updated');
     } catch (e) {
