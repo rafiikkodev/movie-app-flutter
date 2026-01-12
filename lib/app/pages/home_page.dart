@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
@@ -9,7 +10,6 @@ import 'package:template_project_flutter/app/pages/wishlist_page.dart';
 import 'package:template_project_flutter/widgets/home_card.dart';
 import 'package:template_project_flutter/widgets/home_carousel.dart';
 import 'package:template_project_flutter/widgets/home_genre_poster_list.dart';
-import 'package:template_project_flutter/widgets/inputs.dart';
 import 'package:template_project_flutter/widgets/toggle_buttons.dart';
 
 class HomePage extends StatefulWidget {
@@ -22,7 +22,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final MovieRepository _repository = MovieRepository();
   final AuthService _authService = AuthService();
-  final TextEditingController searchController = TextEditingController();
 
   List<MovieModel> nowPlayingMovies = [];
   List<MovieModel> popularMovies = [];
@@ -99,13 +98,6 @@ class _HomePageState extends State<HomePage> {
           children: [
             buildAccount(),
             const SizedBox(height: 24),
-            SearchBarInput(
-              title: "Search",
-              showFilterIcon: true,
-              controller: searchController,
-              width: double.infinity,
-            ),
-            const SizedBox(height: 24),
 
             // Loading State
             if (isLoading)
@@ -179,7 +171,39 @@ class _HomePageState extends State<HomePage> {
         children: [
           Row(
             children: [
-              Image.asset("assets/images/ic-profile-image.png", height: 40),
+              // Avatar with network image
+              userAvatarUrl != null && userAvatarUrl!.isNotEmpty
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: CachedNetworkImage(
+                        imageUrl: userAvatarUrl!,
+                        height: 40,
+                        width: 40,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            color: darkGreyColor,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: darkBlueAccent,
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Image.asset(
+                          "assets/images/ic-profile-image.png",
+                          height: 40,
+                        ),
+                      ),
+                    )
+                  : Image.asset(
+                      "assets/images/ic-profile-image.png",
+                      height: 40,
+                    ),
               const SizedBox(width: 16),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

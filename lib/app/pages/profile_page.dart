@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
@@ -124,17 +125,29 @@ class _ProfilePageState extends State<ProfilePage> {
                   userAvatarUrl != null && userAvatarUrl!.isNotEmpty
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(20),
-                          child: Image.network(
-                            userAvatarUrl!,
+                          child: CachedNetworkImage(
+                            imageUrl: userAvatarUrl!,
                             height: 40,
                             width: 40,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Image.asset(
-                                "assets/images/ic-profile-image.png",
-                                height: 40,
-                              );
-                            },
+                            placeholder: (context, url) => Container(
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                color: darkGreyColor,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: darkBlueAccent,
+                                ),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Image.asset(
+                              "assets/images/ic-profile-image.png",
+                              height: 40,
+                            ),
                           ),
                         )
                       : Image.asset(

@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/data/services/auth_service.dart';
+import 'package:template_project_flutter/app/data/services/storage_service.dart';
 import 'package:template_project_flutter/widgets/buttons.dart';
 
 class SignupPage extends StatefulWidget {
@@ -17,6 +20,10 @@ class _SignupPageState extends State<SignupPage> {
   final passwordController = TextEditingController(text: "");
   final confirmPasswordController = TextEditingController(text: "");
   final AuthService _authService = AuthService();
+  final StorageService _storageService = StorageService();
+  final ImagePicker _imagePicker = ImagePicker();
+
+  File? _selectedImage;
   bool _isLoading = false;
 
   bool validate() {
@@ -27,6 +34,26 @@ class _SignupPageState extends State<SignupPage> {
       return false;
     }
     return true;
+  }
+
+  // Pick image from gallery
+  Future<void> _pickImage() async {
+    try {
+      final XFile? pickedFile = await _imagePicker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+
+      if (pickedFile != null) {
+        setState(() {
+          _selectedImage = File(pickedFile.path);
+        });
+      }
+    } catch (e) {
+      _showError('Failed to pick image: $e');
+    }
   }
 
   Future<void> _handleSignUp() async {
@@ -40,14 +67,42 @@ class _SignupPageState extends State<SignupPage> {
       return;
     }
 
+    // VALIDASI WAJIB UPLOAD FOTO
+    if (_selectedImage == null) {
+      _showError('Please select a profile picture');
+      return;
+    }
+
     setState(() => _isLoading = true);
 
     try {
-      await _authService.signUp(
+      // 1. Signup user dulu untuk dapat user ID
+      final authResponse = await _authService.signUp(
         email: emailController.text.trim(),
         password: passwordController.text,
         username: nameController.text.trim(),
       );
+
+      if (authResponse.user == null) {
+        throw Exception('Failed to create user');
+      }
+
+      final userId = authResponse.user!.id;
+
+      // 2. Upload foto profil ke Supabase Storage
+      final avatarUrl = await _storageService.uploadAvatar(
+        userId: userId,
+        imageFile: _selectedImage!,
+      );
+
+      // 3. Update profile dengan avatar URL
+      await Supabase.instance.client
+          .from('profiles')
+          .update({
+            'avatar_url': avatarUrl,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', userId);
 
       if (mounted) {
         _showSuccess('Account created successfully!');
@@ -131,6 +186,59 @@ class _SignupPageState extends State<SignupPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // PROFILE PICTURE PICKER
+                        Center(
+                          child: Column(
+                            children: [
+                              Text(
+                                'Profile Picture',
+                                style: whiteTextStyle.copyWith(
+                                  fontSize: 14,
+                                  fontWeight: medium,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              GestureDetector(
+                                onTap: _pickImage,
+                                child: Container(
+                                  width: 120,
+                                  height: 120,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: darkGreyColor,
+                                    border: Border.all(
+                                      color: _selectedImage == null
+                                          ? greyColor
+                                          : darkBlueAccent,
+                                      width: 2,
+                                    ),
+                                    image: _selectedImage != null
+                                        ? DecorationImage(
+                                            image: FileImage(_selectedImage!),
+                                            fit: BoxFit.cover,
+                                          )
+                                        : null,
+                                  ),
+                                  child: _selectedImage == null
+                                      ? Icon(
+                                          Icons.add_a_photo,
+                                          size: 40,
+                                          color: greyColor,
+                                        )
+                                      : null,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                _selectedImage == null
+                                    ? 'Tap to select photo *'
+                                    : 'Tap to change photo',
+                                style: greyTextStyle.copyWith(fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 24),
                         _buildFormField(
                           title: 'Full Name',
                           controller: nameController,
