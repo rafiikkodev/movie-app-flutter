@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:template_project_flutter/app/core/utils/logger.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/data/models/movie_model.dart';
 import 'package:template_project_flutter/app/pages/movie_detail_page.dart';
@@ -40,7 +41,7 @@ class _WishlistPageState extends State<WishlistPage> {
         _isLoading = false;
       });
     } catch (e) {
-      debugPrint('DownloadPage: Error loading favorites: $e');
+      LoggerService.error('DownloadPage: Error loading favorites', e);
       setState(() {
         _isLoading = false;
       });

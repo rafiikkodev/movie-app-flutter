@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:template_project_flutter/app/core/utils/logger.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
@@ -85,7 +86,7 @@ class _TrailerPageState extends State<TrailerPage> {
         _errorMessage = e.toString();
         _isLoading = false;
       });
-      debugPrint('Error loading trailer data: $e');
+      LoggerService.error('Error loading trailer data', e);
     }
   }
 

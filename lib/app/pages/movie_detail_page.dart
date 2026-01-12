@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:template_project_flutter/app/core/utils/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/data/models/movie_model.dart';
@@ -69,7 +70,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
         _isLoading = false;
       });
       // TODO: Show error snackbar or dialog
-      debugPrint('Error loading movie details: $e');
+      LoggerService.error('Error loading movie details', e);
     }
   }
 
