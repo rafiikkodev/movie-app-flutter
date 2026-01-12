@@ -17,6 +17,7 @@ class AuthService {
     required String email,
     required String password,
     String? username,
+    String? avatarUrl,
   }) async {
     try {
       final response = await _supabase.auth.signUp(
@@ -38,6 +39,7 @@ class AuthService {
             userId: userId,
             email: email,
             username: userName,
+            avatarUrl: avatarUrl,
           );
           print('Profile created successfully for user: $userId');
         } catch (profileError) {
@@ -64,6 +66,7 @@ class AuthService {
     required String userId,
     required String email,
     required String username,
+    String? avatarUrl,
   }) async {
     // Cek apakah profile sudah ada
     final existingProfile = await _supabase
@@ -78,6 +81,7 @@ class AuthService {
         'id': userId,
         'email': email,
         'username': username,
+        if (avatarUrl != null) 'avatar_url': avatarUrl,
         'created_at': DateTime.now().toIso8601String(),
         'updated_at': DateTime.now().toIso8601String(),
       });
