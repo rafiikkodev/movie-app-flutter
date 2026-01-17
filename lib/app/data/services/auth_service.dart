@@ -1,18 +1,13 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:template_project_flutter/app/core/utils/logger.dart';
 
 class AuthService {
   final SupabaseClient _supabase = Supabase.instance.client;
 
-  // Get current user
   User? get currentUser => _supabase.auth.currentUser;
-
-  // Get current session
   Session? get currentSession => _supabase.auth.currentSession;
-
-  // Check if user is logged in
   bool get isLoggedIn => currentUser != null;
 
-  // REGISTER (Sign Up)
   Future<AuthResponse> signUp({
     required String email,
     required String password,
@@ -30,10 +25,8 @@ class AuthService {
         final userId = response.user!.id;
         final userName = username ?? email.split('@')[0];
 
-        print('User created in auth.users: $userId');
+        LoggerService.success('User created', userId);
 
-        // MANUAL INSERT ke tabel profiles sebagai fallback
-        // (jika trigger Supabase belum di-setup)
         try {
           await _createProfileIfNotExists(
             userId: userId,
@@ -41,42 +34,38 @@ class AuthService {
             username: userName,
             avatarUrl: avatarUrl,
           );
-          print('Profile created successfully for user: $userId');
+          LoggerService.success('Profile created', userId);
         } catch (profileError) {
-          // Jika error karena trigger sudah create (duplicate), abaikan
           if (profileError.toString().contains('duplicate') ||
               profileError.toString().contains('23505')) {
-            print('Profile already exists (created by trigger)');
+            LoggerService.info('Profile already exists (trigger)');
           } else {
-            print('Warning: Failed to create profile: $profileError');
-            // Tidak throw error agar registrasi tetap sukses
+            LoggerService.warning('Failed to create profile', profileError);
           }
         }
       }
 
       return response;
     } catch (e) {
-      print('Sign up error: $e');
+      LoggerService.error('Sign up error', e);
       rethrow;
     }
   }
 
-  // Helper: Create profile in public.profiles table
   Future<void> _createProfileIfNotExists({
     required String userId,
     required String email,
     required String username,
     String? avatarUrl,
   }) async {
-    // Cek apakah profile sudah ada
+    // Optimized: select only 'id' field for check
     final existingProfile = await _supabase
         .from('profiles')
-        .select()
+        .select('id')
         .eq('id', userId)
         .maybeSingle();
 
     if (existingProfile == null) {
-      // Profile belum ada, create baru
       await _supabase.from('profiles').insert({
         'id': userId,
         'email': email,
@@ -85,12 +74,9 @@ class AuthService {
         'created_at': DateTime.now().toIso8601String(),
         'updated_at': DateTime.now().toIso8601String(),
       });
-    } else {
-      print('Profile already exists in database');
     }
   }
 
-  // LOGIN (Sign In)
   Future<AuthResponse> signIn({
     required String email,
     required String password,
@@ -100,38 +86,34 @@ class AuthService {
         email: email,
         password: password,
       );
-
-      print('User logged in: ${response.user!.id}');
+      LoggerService.success('User logged in', response.user!.id);
       return response;
     } catch (e) {
-      print('Sign in error: $e');
+      LoggerService.error('Sign in error', e);
       rethrow;
     }
   }
 
-  // LOGOUT (Sign Out)
   Future<void> signOut() async {
     try {
       await _supabase.auth.signOut();
-      print('User logged out');
+      LoggerService.info('User logged out');
     } catch (e) {
-      print('Sign out error: $e');
+      LoggerService.error('Sign out error', e);
       rethrow;
     }
   }
 
-  // RESET PASSWORD
   Future<void> resetPassword(String email) async {
     try {
       await _supabase.auth.resetPasswordForEmail(email);
-      print('Password reset email sent to: $email');
+      LoggerService.info('Password reset email sent', email);
     } catch (e) {
-      print('Reset password error: $e');
+      LoggerService.error('Reset password error', e);
       rethrow;
     }
   }
 
-  // UPDATE USER DATA
   Future<UserResponse> updateUser({
     String? email,
     String? password,
@@ -142,12 +124,12 @@ class AuthService {
         UserAttributes(email: email, password: password, data: data),
       );
     } catch (e) {
-      print('Update user error: $e');
+      LoggerService.error('Update user error', e);
       rethrow;
     }
   }
 
-  // GET USER PROFILE
+  // Optimized: select only required fields
   Future<Map<String, dynamic>?> getUserProfile() async {
     try {
       final userId = currentUser?.id;
@@ -155,18 +137,17 @@ class AuthService {
 
       final response = await _supabase
           .from('profiles')
-          .select()
+          .select('username, full_name, email, avatar_url')
           .eq('id', userId)
           .single();
 
       return response;
     } catch (e) {
-      print('Get profile error: $e');
+      LoggerService.error('Get profile error', e);
       return null;
     }
   }
 
-  // UPDATE USER PROFILE
   Future<void> updateProfile({
     String? username,
     String? fullName,
@@ -186,9 +167,9 @@ class AuthService {
           })
           .eq('id', userId);
 
-      print('Profile updated');
+      LoggerService.success('Profile updated');
     } catch (e) {
-      print('Update profile error: $e');
+      LoggerService.error('Update profile error', e);
       rethrow;
     }
   }

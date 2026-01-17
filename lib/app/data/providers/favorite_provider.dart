@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:template_project_flutter/app/core/utils/logger.dart';
 import 'package:template_project_flutter/app/data/models/movie_model.dart';
 
 /// FavoriteProvider dengan optimistic update untuk UI yang responsif
@@ -94,7 +95,7 @@ class FavoriteProvider extends ChangeNotifier {
       _errorMessage = e.toString();
       _isLoading = false;
       notifyListeners();
-      debugPrint('Error loading favorites: $e');
+      LoggerService.error('Error loading favorites', e);
     }
   }
 
@@ -133,7 +134,7 @@ class FavoriteProvider extends ChangeNotifier {
             .eq('user_id', _userId!)
             .eq('movie_id', movie.id);
 
-        debugPrint('Removed from favorites: ${movie.title}');
+        LoggerService.success('Removed from favorites: ${movie.title}');
         return false; // Tidak favorit lagi
       } catch (e) {
         // ROLLBACK: Kembalikan ke posisi semula jika gagal
@@ -145,7 +146,7 @@ class FavoriteProvider extends ChangeNotifier {
         _favoriteIds.add(movie.id);
         _errorMessage = 'Failed to remove from favorites';
         notifyListeners();
-        debugPrint('Error removing favorite, rolled back: $e');
+        LoggerService.error('Error removing favorite, rolled back', e);
         return true; // Masih favorit karena gagal dihapus
       }
     } else {
@@ -166,12 +167,12 @@ class FavoriteProvider extends ChangeNotifier {
           'genre_names': movie.genreNamesDisplay,
         });
 
-        debugPrint('Added to favorites: ${movie.title}');
+        LoggerService.success('Added to favorites: ${movie.title}');
         return true; // Sekarang favorit
       } on PostgrestException catch (e) {
         if (e.code == '23505') {
           // Duplicate - sudah favorit, tidak perlu rollback
-          debugPrint('Movie already in favorites (server)');
+          LoggerService.warning('Movie already in favorites (server)');
           return true;
         }
         // ROLLBACK: Hapus dari list lokal jika gagal tambah
@@ -187,7 +188,7 @@ class FavoriteProvider extends ChangeNotifier {
         _favoriteIds.remove(movie.id);
         _errorMessage = 'Failed to add to favorites';
         notifyListeners();
-        debugPrint('Error adding favorite, rolled back: $e');
+        LoggerService.error('Error adding favorite, rolled back', e);
         return false;
       }
     }

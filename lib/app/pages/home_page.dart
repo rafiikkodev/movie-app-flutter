@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
         }
       }
     } catch (e) {
-      print('Error loading user data: $e');
+      // Silent fail - user can still use app
     }
   }
 

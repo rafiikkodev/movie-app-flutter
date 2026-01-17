@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:template_project_flutter/app/data/models/movie_model.dart';
+import 'package:template_project_flutter/app/core/utils/logger.dart';
 
 class FavoriteService {
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -27,18 +28,17 @@ class FavoriteService {
         'genre_names': movie.genreNamesDisplay,
       });
 
-      print('Added to favorites: ${movie.title}');
+      LoggerService.success('Added to favorites', movie.title);
       return true;
     } on PostgrestException catch (e) {
       if (e.code == '23505') {
-        // Duplicate key - already favorited
-        print('Movie already in favorites');
+        LoggerService.info('Movie already in favorites');
         return false;
       }
-      print('Error adding favorite: $e');
+      LoggerService.error('Error adding favorite', e);
       rethrow;
     } catch (e) {
-      print('Error adding favorite: $e');
+      LoggerService.error('Error adding favorite', e);
       rethrow;
     }
   }
@@ -50,9 +50,12 @@ class FavoriteService {
 
       final response = await _supabase
           .from('favorites')
-          .select()
+          .select(
+            'movie_id, title, poster_path, vote_average, release_date, genre_names',
+          )
           .eq('user_id', _userId!)
-          .order('created_at', ascending: false);
+          .order('created_at', ascending: false)
+          .limit(100);
 
       return (response as List)
           .map(
@@ -69,7 +72,7 @@ class FavoriteService {
           )
           .toList();
     } catch (e) {
-      print('Error getting favorites: $e');
+      LoggerService.error('Error getting favorites', e);
       return [];
     }
   }
@@ -85,10 +88,10 @@ class FavoriteService {
           .eq('user_id', _userId!)
           .eq('movie_id', movieId);
 
-      print('Removed from favorites: $movieId');
+      LoggerService.success('Removed from favorites', movieId);
       return true;
     } catch (e) {
-      print('Error removing favorite: $e');
+      LoggerService.error('Error removing favorite', e);
       rethrow;
     }
   }
@@ -107,7 +110,7 @@ class FavoriteService {
 
       return response != null;
     } catch (e) {
-      print('Error checking favorite: $e');
+      LoggerService.error('Error checking favorite', e);
       return false;
     }
   }
@@ -132,12 +135,12 @@ class FavoriteService {
 
       final response = await _supabase
           .from('favorites')
-          .select()
+          .select('id')
           .eq('user_id', _userId!);
 
       return (response as List).length;
     } catch (e) {
-      print('Error getting favorite count: $e');
+      LoggerService.error('Error getting favorite count', e);
       return 0;
     }
   }
@@ -149,9 +152,9 @@ class FavoriteService {
 
       await _supabase.from('favorites').delete().eq('user_id', _userId!);
 
-      print('All favorites cleared');
+      LoggerService.info('All favorites cleared');
     } catch (e) {
-      print('Error clearing favorites: $e');
+      LoggerService.error('Error clearing favorites', e);
       rethrow;
     }
   }
