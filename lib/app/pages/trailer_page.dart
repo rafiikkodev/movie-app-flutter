@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:template_project_flutter/app/core/utils/logger.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/data/models/movie_model.dart';
 import 'package:template_project_flutter/app/data/models/video_model.dart';
 import 'package:template_project_flutter/app/data/models/cast_crew_model.dart';
+import 'package:template_project_flutter/app/data/providers/favorite_provider.dart';
 import 'package:template_project_flutter/app/data/repositories/video_repository.dart';
 import 'package:template_project_flutter/app/data/repositories/cast_crew_repository.dart';
-import 'package:template_project_flutter/app/data/services/favorite_service.dart';
 import 'package:template_project_flutter/widgets/app_bar.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -22,10 +24,8 @@ class TrailerPage extends StatefulWidget {
 class _TrailerPageState extends State<TrailerPage> {
   final VideoRepository _videoRepository = VideoRepository();
   final CastCrewRepository _castCrewRepository = CastCrewRepository();
-  final FavoriteService _favoriteService = FavoriteService();
 
   bool _isLoading = true;
-  bool _isFavorite = false;
   List<VideoModel> _trailers = [];
   List<CastModel> _cast = [];
   List<CrewModel> _crew = [];
@@ -36,32 +36,25 @@ class _TrailerPageState extends State<TrailerPage> {
   void initState() {
     super.initState();
     _loadTrailerData();
-    _checkFavoriteStatus();
   }
 
-  Future<void> _checkFavoriteStatus() async {
-    final isFav = await _favoriteService.isFavorite(widget.movie.id);
-    setState(() {
-      _isFavorite = isFav;
-    });
-  }
+  void _toggleFavorite() {
+    final provider = context.read<FavoriteProvider>();
+    final wasF = provider.isFavorite(widget.movie.id);
 
-  Future<void> _toggleFavorite() async {
-    await _favoriteService.toggleFavorite(widget.movie);
-    await _checkFavoriteStatus();
+    // Optimistic update - akan langsung update UI
+    provider.toggleFavorite(widget.movie);
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isFavorite ? 'Added to favorites' : 'Removed from favorites',
-            style: whiteTextStyle.copyWith(fontSize: 14),
-          ),
-          backgroundColor: darkBlueAccent,
-          duration: const Duration(seconds: 2),
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          !wasF ? 'Added to favorites' : 'Removed from favorites',
+          style: whiteTextStyle.copyWith(fontSize: 14),
         ),
-      );
-    }
+        backgroundColor: darkBlueAccent,
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   Future<void> _loadTrailerData() async {
@@ -93,7 +86,7 @@ class _TrailerPageState extends State<TrailerPage> {
         _errorMessage = e.toString();
         _isLoading = false;
       });
-      debugPrint('Error loading trailer data: $e');
+      LoggerService.error('Error loading trailer data', e);
     }
   }
 
@@ -162,69 +155,75 @@ class _TrailerPageState extends State<TrailerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          CustomAppBar(
-            showBackButton: true,
-            title: "Trailer",
-            showFavoriteButton: true,
-            isFavorite: _isFavorite,
-            onFavoritePressed: _toggleFavorite,
-          ),
-          if (_isLoading)
-            SliverFillRemaining(
-              child: Center(
-                child: CircularProgressIndicator(color: darkBlueAccent),
+      body: Consumer<FavoriteProvider>(
+        builder: (context, favoriteProvider, child) {
+          final isFavorite = favoriteProvider.isFavorite(widget.movie.id);
+
+          return CustomScrollView(
+            slivers: [
+              CustomAppBar(
+                showBackButton: true,
+                title: "Trailer",
+                showFavoriteButton: true,
+                isFavorite: isFavorite,
+                onFavoritePressed: _toggleFavorite,
               ),
-            )
-          else if (_errorMessage.isNotEmpty)
-            SliverFillRemaining(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.error_outline, size: 64, color: greyColor),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Failed to load trailer',
-                        style: whiteTextStyle.copyWith(
-                          fontSize: 18,
-                          fontWeight: semiBold,
-                        ),
+              if (_isLoading)
+                SliverFillRemaining(
+                  child: Center(
+                    child: CircularProgressIndicator(color: darkBlueAccent),
+                  ),
+                )
+              else if (_errorMessage.isNotEmpty)
+                SliverFillRemaining(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.error_outline, size: 64, color: greyColor),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Failed to load trailer',
+                            style: whiteTextStyle.copyWith(
+                              fontSize: 18,
+                              fontWeight: semiBold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            _errorMessage,
+                            style: greyTextStyle.copyWith(fontSize: 14),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _errorMessage,
-                        style: greyTextStyle.copyWith(fontSize: 14),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                    ),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      const SizedBox(height: 24),
+                      _buildVideoPlayer(),
+                      const SizedBox(height: 24),
+                      _buildMovieInfo(),
+                      const SizedBox(height: 24),
+                      _buildSynopsis(),
+                      const SizedBox(height: 24),
+                      _buildCastAndCrew(),
+                      const SizedBox(height: 24),
+                      _buildGallery(),
+                      const SizedBox(height: 24),
+                    ]),
                   ),
                 ),
-              ),
-            )
-          else
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  const SizedBox(height: 24),
-                  _buildVideoPlayer(),
-                  const SizedBox(height: 24),
-                  _buildMovieInfo(),
-                  const SizedBox(height: 24),
-                  _buildSynopsis(),
-                  const SizedBox(height: 24),
-                  _buildCastAndCrew(),
-                  const SizedBox(height: 24),
-                  _buildGallery(),
-                  const SizedBox(height: 24),
-                ]),
-              ),
-            ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }

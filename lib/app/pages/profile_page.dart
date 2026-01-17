@@ -1,16 +1,63 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:template_project_flutter/app/core/theme/theme.dart';
 import 'package:template_project_flutter/app/data/services/auth_service.dart';
 import 'package:template_project_flutter/widgets/buttons.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  final AuthService _authService = AuthService();
+
+  String userName = 'User';
+  String userEmail = '';
+  String? userAvatarUrl;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      final user = _authService.currentUser;
+      if (user != null) {
+        final profile = await _authService.getUserProfile();
+        if (mounted) {
+          setState(() {
+            userEmail = user.email ?? '';
+            userName =
+                profile?['full_name'] ??
+                profile?['username'] ??
+                user.userMetadata?['username'] ??
+                user.email?.split('@')[0] ??
+                'User';
+            userAvatarUrl = profile?['avatar_url'];
+            isLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      // Silent fail
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
 
   Future<void> _handleLogout(BuildContext context) async {
     try {
-      final authService = AuthService();
-      await authService.signOut();
+      await _authService.signOut();
 
       if (context.mounted) {
         Navigator.pushNamedAndRemoveUntil(
@@ -72,30 +119,67 @@ class ProfilePage extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Image.asset("assets/images/ic-profile-image.png", height: 40),
-                const SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Smith",
-                      style: whiteTextStyle.copyWith(
-                        fontSize: 16,
-                        fontWeight: semiBold,
-                      ),
+            Expanded(
+              child: Row(
+                children: [
+                  userAvatarUrl != null && userAvatarUrl!.isNotEmpty
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: CachedNetworkImage(
+                            imageUrl: userAvatarUrl!,
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                color: darkGreyColor,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: darkBlueAccent,
+                                ),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Image.asset(
+                              "assets/images/ic-profile-image.png",
+                              height: 40,
+                            ),
+                          ),
+                        )
+                      : Image.asset(
+                          "assets/images/ic-profile-image.png",
+                          height: 40,
+                        ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          userName,
+                          style: whiteTextStyle.copyWith(
+                            fontSize: 16,
+                            fontWeight: semiBold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          userEmail,
+                          style: greyTextStyle.copyWith(
+                            fontSize: 12,
+                            fontWeight: medium,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
-                    Text(
-                      "smith@gmail.com",
-                      style: greyTextStyle.copyWith(
-                        fontSize: 12,
-                        fontWeight: medium,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
             Center(
               child: SvgPicture.asset(
