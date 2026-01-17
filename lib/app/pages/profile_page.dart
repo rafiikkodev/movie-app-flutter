@@ -46,7 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
         }
       }
     } catch (e) {
-      print('Error loading user data: $e');
+      // Silent fail
       if (mounted) {
         setState(() {
           isLoading = false;

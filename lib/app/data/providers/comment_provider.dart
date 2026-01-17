@@ -1,34 +1,26 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:template_project_flutter/app/data/models/comment_model.dart';
+import 'package:template_project_flutter/app/core/utils/logger.dart';
 
-/// CommentProvider dengan optimistic update untuk komentar yang responsif
-///
-/// Fitur:
-/// - **Optimistic Update**: Komentar langsung muncul tanpa menunggu server
-/// - **Nested Replies**: Mendukung threading (reply to comment)
-/// - **Like/Unlike**: Dengan optimistic update
-/// - **Real-time ready**: Bisa ditambahkan realtime subscription
+/// CommentProvider dengan optimistic update dan pagination
 class CommentProvider extends ChangeNotifier {
   final SupabaseClient _supabase = Supabase.instance.client;
+  static const int _commentsLimit = 50;
 
-  // State
   Map<int, List<CommentModel>> _commentsByMovie = {};
   Map<int, bool> _loadingByMovie = {};
   Map<int, String?> _errorByMovie = {};
   Set<String> _likedCommentIds = {};
 
-  // Getters
   List<CommentModel> getComments(int movieId) =>
       _commentsByMovie[movieId] ?? [];
   bool isLoading(int movieId) => _loadingByMovie[movieId] ?? false;
   String? getError(int movieId) => _errorByMovie[movieId];
 
-  // Current user
   String? get _userId => _supabase.auth.currentUser?.id;
   bool get isLoggedIn => _userId != null;
 
-  /// Load comments untuk movie tertentu
   Future<void> loadComments(int movieId) async {
     if (_loadingByMovie[movieId] == true) return;
 
@@ -37,22 +29,23 @@ class CommentProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Fetch comments tanpa join
+      // Optimized: limit 50 comments + select specific fields
       final commentsResponse = await _supabase
           .from('comments')
-          .select('*')
+          .select(
+            'id, movie_id, user_id, parent_id, content, likes_count, created_at, updated_at',
+          )
           .eq('movie_id', movieId)
-          .order('created_at', ascending: false);
+          .order('created_at', ascending: false)
+          .limit(_commentsLimit);
 
       final commentsList = commentsResponse as List;
 
-      // Get unique user IDs
       final userIds = commentsList
           .map((c) => c['user_id'] as String)
           .toSet()
           .toList();
 
-      // Fetch profiles untuk semua user yang berkomentar
       Map<String, Map<String, dynamic>> profilesMap = {};
       if (userIds.isNotEmpty) {
         final profilesResponse = await _supabase
@@ -65,12 +58,12 @@ class CommentProvider extends ChangeNotifier {
         }
       }
 
-      // Fetch liked comments by current user
       if (_userId != null) {
         final likedResponse = await _supabase
             .from('comment_likes')
             .select('comment_id')
-            .eq('user_id', _userId!);
+            .eq('user_id', _userId!)
+            .limit(200);
 
         _likedCommentIds = (likedResponse as List)
             .map((e) => e['comment_id'] as String)
@@ -117,7 +110,7 @@ class CommentProvider extends ChangeNotifier {
       _errorByMovie[movieId] = e.toString();
       _loadingByMovie[movieId] = false;
       notifyListeners();
-      debugPrint('Error loading comments: $e');
+      LoggerService.error('Error loading comments', e);
     }
   }
 
@@ -188,7 +181,7 @@ class CommentProvider extends ChangeNotifier {
       // ROLLBACK: Remove optimistic comment
       _removeComment(movieId, optimisticComment.id);
       notifyListeners();
-      debugPrint('Error adding comment: $e');
+      LoggerService.error('Error adding comment', e);
       return false;
     }
   }
@@ -235,7 +228,7 @@ class CommentProvider extends ChangeNotifier {
         _updateCommentLikeCount(movieId, commentId, -1);
       }
       notifyListeners();
-      debugPrint('Error toggling like: $e');
+      LoggerService.error('Error toggling like', e);
       return false;
     }
   }
@@ -264,7 +257,7 @@ class CommentProvider extends ChangeNotifier {
       // ROLLBACK
       _addCommentOptimistically(movieId, backup);
       notifyListeners();
-      debugPrint('Error deleting comment: $e');
+      LoggerService.error('Error deleting comment', e);
       return false;
     }
   }
@@ -296,7 +289,7 @@ class CommentProvider extends ChangeNotifier {
       // ROLLBACK
       _updateCommentContent(movieId, commentId, oldComment.content);
       notifyListeners();
-      debugPrint('Error editing comment: $e');
+      LoggerService.error('Error editing comment', e);
       return false;
     }
   }
